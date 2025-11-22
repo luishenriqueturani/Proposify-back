@@ -15,12 +15,15 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 ## 🚀 FASE 1: Setup e Configuração Inicial
 
 ### 1.1. Estrutura do Projeto
-- ⬜ Criar estrutura de pastas base do projeto
-- ⬜ Configurar `manage.py`
+- ✅ Criar estrutura de pastas base do projeto
+- ✅ Configurar `manage.py`
 - ⬜ Criar estrutura de apps (accounts, services, orders, chat, subscriptions, payments, reviews, admin, notifications, utils)
-- ⬜ Configurar `requirements.txt` com dependências básicas
+- ✅ Configurar `requirements.txt` com dependências básicas
+- ✅ Configurar `requirements-dev.txt` com dependências de desenvolvimento
 - ⬜ Criar arquivo `.env.example`
-- ⬜ Configurar `.gitignore`
+- ✅ Configurar `.gitignore`
+- ✅ Criar ambiente virtual (venv)
+- ✅ Instalar dependências do projeto
 
 ### 1.2. Configuração Django
 - ⬜ Configurar `config/settings/base.py`
