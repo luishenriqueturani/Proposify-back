@@ -1,0 +1,21 @@
+{
+  "include": [
+    "api",
+    "marketplace"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "**/migrations",
+    "venv"
+  ],
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "reportMissingModuleSource": false,
+  "reportGeneralTypeIssues": false,
+  "pythonVersion": "3.14",
+  "typeCheckingMode": "basic",
+  "venvPath": ".",
+  "venv": "venv",
+  "stubPath": "venv/lib64/python3.14/site-packages"
+}
+
