@@ -1,7 +1,8 @@
 {
   "include": [
     "api",
-    "marketplace"
+    "marketplace",
+    "config"
   ],
   "exclude": [
     "**/__pycache__",
@@ -12,6 +13,8 @@
   "reportMissingTypeStubs": false,
   "reportMissingModuleSource": false,
   "reportGeneralTypeIssues": false,
+  "reportUndefinedVariable": false,
+  "reportUnknownMemberType": false,
   "pythonVersion": "3.14",
   "typeCheckingMode": "basic",
   "venvPath": ".",

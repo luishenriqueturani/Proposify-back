@@ -26,12 +26,12 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Instalar dependências do projeto
 
 ### 1.2. Configuração Django
-- ⬜ Configurar `config/settings/base.py`
-- ⬜ Configurar `config/settings/dev.py`
-- ⬜ Configurar `config/settings/prod.py`
-- ⬜ Configurar `config/urls.py`
-- ⬜ Configurar variáveis de ambiente
-- ⬜ Configurar conexão com PostgreSQL
+- ✅ Configurar `config/settings/base.py`
+- ✅ Configurar `config/settings/dev.py`
+- ✅ Configurar `config/settings/prod.py`
+- ✅ Configurar `config/urls.py`
+- ✅ Configurar variáveis de ambiente
+- ✅ Configurar conexão com PostgreSQL
 
 ### 1.3. Soft Delete (Base)
 - ⬜ Criar `api/utils/managers.py` com `SoftDeleteManager`
