@@ -289,6 +289,13 @@ if SENTRY_DSN and SENTRY_DSN.strip() and SENTRY_DSN != 'your-sentry-dsn-here':
     )
 
 # Logging Configuration
+# Formatters disponíveis: verbose (texto), simple (texto), json (estruturado)
+try:
+    from pythonjsonlogger import jsonlogger  # type: ignore
+    JSON_LOGGING_AVAILABLE = True
+except ImportError:
+    JSON_LOGGING_AVAILABLE = False
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -301,18 +308,33 @@ LOGGING = {
             'format': '{levelname} {message}',
             'style': '{',
         },
+        'json': {
+            '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+            'format': '%(asctime)s %(name)s %(levelname)s %(message)s %(pathname)s %(lineno)d %(funcName)s',
+        } if JSON_LOGGING_AVAILABLE else {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+            'formatter': 'verbose',  # Console usa formato texto legível
         },
         'file': {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': BASE_DIR / 'logs' / 'django.log',
             'maxBytes': 1024 * 1024 * 10,  # 10 MB
+            'backupCount': 5,  # Mantém 5 arquivos de backup
+            'formatter': 'json' if JSON_LOGGING_AVAILABLE else 'verbose',
+        },
+        'error_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'django-error.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10 MB
             'backupCount': 5,
-            'formatter': 'verbose',
+            'formatter': 'json' if JSON_LOGGING_AVAILABLE else 'verbose',
+            'level': 'ERROR',
         },
     },
     'root': {
@@ -326,13 +348,23 @@ LOGGING = {
             'propagate': False,
         },
         'django.request': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'error_file'],
             'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
             'propagate': False,
         },
         'api': {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
+            'propagate': False,
+        },
+        'celery': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
             'propagate': False,
         },
     },

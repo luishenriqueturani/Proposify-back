@@ -40,17 +40,17 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Testar soft delete básico
 
 ### 1.4. Testes da Fase 1
-- ⬜ Testes unitários: SoftDeleteManager
-- ⬜ Testes unitários: SoftDeleteModel
-- ⬜ Testes de integração: health check endpoints
-- ⬜ Testes de configuração: settings (dev, prod)
+- ✅ Testes unitários: SoftDeleteManager
+- ✅ Testes unitários: SoftDeleteModel
+- ✅ Testes de integração: health check endpoints
+- ✅ Testes de configuração: settings (dev, prod)
 
 ### 1.5. Observabilidade e Monitoramento
-- ⬜ Instalar e configurar Sentry
-- ⬜ Configurar logging estruturado (JSON)
-- ⬜ Criar endpoints de health check (`/health/`, `/health/db/`, `/health/redis/`, `/health/celery/`)
-- ⬜ Configurar níveis de log (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-- ⬜ Configurar rotação de logs
+- ✅ Instalar e configurar Sentry
+- ✅ Configurar logging estruturado (JSON)
+- ✅ Criar endpoints de health check (`/health/`, `/health/db/`, `/health/redis/`, `/health/celery/`)
+- ✅ Configurar níveis de log (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+- ✅ Configurar rotação de logs
 
 ### 1.6. Documentação da Fase 1
 - ⬜ Instalar `drf-yasg` ou `drf-spectacular`
