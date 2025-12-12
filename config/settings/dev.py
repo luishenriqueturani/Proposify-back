@@ -19,6 +19,16 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv(
 #     }
 # }
 
+# Use SQLite para testes (mais rápido e não requer PostgreSQL)
+import sys
+if 'test' in sys.argv or 'pytest' in sys.modules:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+
 # Email backend para desenvolvimento (console)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

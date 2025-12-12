@@ -34,10 +34,10 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Configurar conexão com PostgreSQL
 
 ### 1.3. Soft Delete (Base)
-- ⬜ Criar `api/utils/managers.py` com `SoftDeleteManager`
-- ⬜ Criar `api/utils/models.py` com `SoftDeleteModel` (base class)
-- ⬜ Criar mixins para soft delete
-- ⬜ Testar soft delete básico
+- ✅ Criar `api/utils/managers.py` com `SoftDeleteManager`
+- ✅ Criar `api/utils/models.py` com `SoftDeleteModel` (base class)
+- ✅ Criar mixins para soft delete
+- ✅ Testar soft delete básico
 
 ### 1.4. Testes da Fase 1
 - ⬜ Testes unitários: SoftDeleteManager
