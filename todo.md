@@ -53,12 +53,12 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Configurar rotação de logs
 
 ### 1.6. Documentação da Fase 1
-- ⬜ Instalar `drf-yasg` ou `drf-spectacular`
-- ⬜ Configurar Swagger/OpenAPI
-- ⬜ Configurar endpoints de documentação (`/swagger/`, `/redoc/`, `/openapi.json`)
-- ⬜ Criar README.md com instruções de setup
-- ⬜ Documentar estrutura do projeto
-- ⬜ Documentar variáveis de ambiente no README
+- ✅ Instalar `drf-yasg` ou `drf-spectacular`
+- ✅ Configurar Swagger/OpenAPI
+- ✅ Configurar endpoints de documentação (`/api/swagger/`, `/api/redoc/`, `/api/schema/`)
+- ✅ Criar README.md com instruções de setup
+- ✅ Documentar estrutura do projeto
+- ✅ Documentar variáveis de ambiente no README
 
 ---
 

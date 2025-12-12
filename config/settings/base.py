@@ -253,9 +253,12 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Proposify API',
     'DESCRIPTION': 'API REST para plataforma de Marketplace de Serviços',
     'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_INCLUDE_SCHEMA': True,  # Permite acesso ao schema via /api/schema/
     'COMPONENT_SPLIT_REQUEST': True,
     'SCHEMA_PATH_PREFIX': '/api/',
+    'SERVERS': [
+        {'url': 'http://localhost:8000', 'description': 'Servidor de desenvolvimento'},
+    ],
 }
 
 # Email Configuration (django-anymail)
