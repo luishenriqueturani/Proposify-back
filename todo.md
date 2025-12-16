@@ -65,11 +65,11 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 ## 🗄️ FASE 2: Banco de Dados e Modelos
 
 ### 2.1. Modelo User e Autenticação Base
-- ⬜ Criar modelo `User` customizado (estender AbstractUser)
-- ⬜ Adicionar campos: `created_at`, `updated_at`, `deleted_at`
-- ⬜ Configurar hash de senhas com bcrypt
-- ⬜ Criar migrations iniciais
-- ⬜ Aplicar migrations
+- ✅ Criar modelo `User` customizado (estender AbstractUser)
+- ✅ Adicionar campos: `created_at`, `updated_at`, `deleted_at`
+- ✅ Configurar hash de senhas com bcrypt
+- ✅ Criar migrations iniciais
+- ✅ Aplicar migrations
 
 ### 2.2. Modelos de Perfis
 - ⬜ Criar modelo `ProviderProfile` (OneToOne com User)
