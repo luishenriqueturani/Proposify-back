@@ -72,18 +72,18 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Aplicar migrations
 
 ### 2.2. Modelos de Perfis
-- ⬜ Criar modelo `ProviderProfile` (OneToOne com User)
-- ⬜ Criar modelo `ClientProfile` (OneToOne com User)
-- ⬜ Adicionar campos `deleted_at` em ambos
-- ⬜ Criar migrations
-- ⬜ Aplicar migrations
+- ✅ Criar modelo `ProviderProfile` (OneToOne com User)
+- ✅ Criar modelo `ClientProfile` (OneToOne com User)
+- ✅ Adicionar campos `deleted_at` em ambos
+- ✅ Criar migrations
+- ✅ Aplicar migrations
 
 ### 2.3. Modelos de Serviços
-- ⬜ Criar modelo `ServiceCategory` (com parent para subcategorias)
-- ⬜ Criar modelo `Service`
-- ⬜ Adicionar campos `deleted_at` em ambos
-- ⬜ Criar migrations
-- ⬜ Aplicar migrations
+- ✅ Criar modelo `ServiceCategory` (com parent para subcategorias)
+- ✅ Criar modelo `Service`
+- ✅ Adicionar campos `deleted_at` em ambos
+- ✅ Criar migrations
+- ✅ Aplicar migrations
 
 ### 2.4. Modelos de Pedidos e Propostas
 - ⬜ Criar modelo `Order`
