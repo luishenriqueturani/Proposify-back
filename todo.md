@@ -86,11 +86,11 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Aplicar migrations
 
 ### 2.4. Modelos de Pedidos e Propostas
-- ⬜ Criar modelo `Order`
-- ⬜ Criar modelo `Proposal`
-- ⬜ Adicionar campos `deleted_at` em ambos
-- ⬜ Criar migrations
-- ⬜ Aplicar migrations
+- ✅ Criar modelo `Order`
+- ✅ Criar modelo `Proposal`
+- ✅ Adicionar campos `deleted_at` em ambos
+- ✅ Criar migrations
+- ✅ Aplicar migrations
 
 ### 2.5. Modelos de Chat
 - ⬜ Criar modelo `ChatRoom`
