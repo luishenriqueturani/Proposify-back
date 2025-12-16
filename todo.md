@@ -116,18 +116,18 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Aplicar migrations
 
 ### 2.8. Modelos de Reviews
-- ⬜ Criar modelo `Review`
-- ⬜ Adicionar campo `deleted_at`
-- ⬜ Criar índice único (order, reviewer)
-- ⬜ Criar migrations
-- ⬜ Aplicar migrations
+- ✅ Criar modelo `Review`
+- ✅ Adicionar campo `deleted_at`
+- ✅ Criar índice único (order, reviewer)
+- ✅ Criar migrations
+- ✅ Aplicar migrations
 
 ### 2.9. Modelos Administrativos
-- ⬜ Criar modelo `AdminAction` (auditoria)
-- ⬜ Criar modelo `DeviceToken` (para Firebase - futuro)
-- ⬜ Adicionar campos `deleted_at` em ambos
-- ⬜ Criar migrations
-- ⬜ Aplicar migrations
+- ✅ Criar modelo `AdminAction` (auditoria)
+- ✅ Criar modelo `DeviceToken` (para Firebase - futuro)
+- ✅ Adicionar campos `deleted_at` em ambos
+- ✅ Criar migrations
+- ✅ Aplicar migrations
 
 ### 2.10. Testes da Fase 2
 - ⬜ Testes unitários: Modelo User (validações, métodos)
