@@ -93,27 +93,27 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Aplicar migrations
 
 ### 2.5. Modelos de Chat
-- ⬜ Criar modelo `ChatRoom`
-- ⬜ Criar modelo `Message` (com tipos: TEXT, IMAGE, FILE, SYSTEM)
-- ⬜ Adicionar campos `deleted_at` em ambos
-- ⬜ Criar índices necessários
-- ⬜ Criar migrations
-- ⬜ Aplicar migrations
+- ✅ Criar modelo `ChatRoom`
+- ✅ Criar modelo `Message` (com tipos: TEXT, IMAGE, FILE, SYSTEM)
+- ✅ Adicionar campos `deleted_at` em ambos
+- ✅ Criar índices necessários
+- ✅ Criar migrations
+- ✅ Aplicar migrations
 
 ### 2.6. Modelos de Assinaturas
-- ⬜ Criar modelo `SubscriptionPlan`
-- ⬜ Criar modelo `UserSubscription`
-- ⬜ Criar modelo `SubscriptionPayment`
-- ⬜ Adicionar campos `deleted_at` em todos
-- ⬜ Criar migrations
-- ⬜ Aplicar migrations
-- ⬜ Criar dados iniciais (planos: FREE, BASIC, PREMIUM, ENTERPRISE)
+- ✅ Criar modelo `SubscriptionPlan`
+- ✅ Criar modelo `UserSubscription`
+- ✅ Criar modelo `SubscriptionPayment`
+- ✅ Adicionar campos `deleted_at` em todos
+- ✅ Criar migrations
+- ✅ Aplicar migrations
+- ✅ Criar dados iniciais (planos: FREE, BASIC, PREMIUM, ENTERPRISE)
 
 ### 2.7. Modelos de Pagamentos
-- ⬜ Criar modelo `Payment` (pagamentos de serviços)
-- ⬜ Adicionar campo `deleted_at`
-- ⬜ Criar migrations
-- ⬜ Aplicar migrations
+- ✅ Criar modelo `Payment` (pagamentos de serviços)
+- ✅ Adicionar campo `deleted_at`
+- ✅ Criar migrations
+- ✅ Aplicar migrations
 
 ### 2.8. Modelos de Reviews
 - ⬜ Criar modelo `Review`
