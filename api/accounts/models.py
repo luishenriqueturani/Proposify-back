@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from api.utils.models import SoftDeleteMixin
 from api.utils.managers import SoftDeleteManager
+from api.accounts.enums import UserType
 
 
 class User(SoftDeleteMixin, AbstractUser):
@@ -19,11 +20,6 @@ class User(SoftDeleteMixin, AbstractUser):
     - Tipo de usuário (CLIENT, PROVIDER, ADMIN)
     """
 
-    class UserType(models.TextChoices):
-        CLIENT = 'CLIENT', 'Cliente'
-        PROVIDER = 'PROVIDER', 'Prestador'
-        ADMIN = 'ADMIN', 'Administrador'
-
     # Campos adicionais
     phone = models.CharField(  # type: ignore
         max_length=20,
@@ -35,8 +31,8 @@ class User(SoftDeleteMixin, AbstractUser):
 
     user_type = models.CharField(  # type: ignore
         max_length=10,
-        choices=UserType.choices,
-        default=UserType.CLIENT,
+        choices=UserType.choices(),
+        default=UserType.CLIENT.value,
         verbose_name='Tipo de Usuário',
         help_text='Tipo de usuário: Cliente, Prestador ou Administrador'
     )
@@ -84,17 +80,17 @@ class User(SoftDeleteMixin, AbstractUser):
     @property
     def is_client(self):
         """Retorna True se o usuário é um cliente."""
-        return self.user_type == self.UserType.CLIENT
+        return self.user_type == UserType.CLIENT.value
 
     @property
     def is_provider(self):
         """Retorna True se o usuário é um prestador."""
-        return self.user_type == self.UserType.PROVIDER
+        return self.user_type == UserType.PROVIDER.value
 
     @property
     def is_admin_user(self):
         """Retorna True se o usuário é um administrador."""
-        return self.user_type == self.UserType.ADMIN or self.is_staff or self.is_superuser
+        return self.user_type == UserType.ADMIN.value or self.is_staff or self.is_superuser
 
 
 class ProviderProfile(SoftDeleteMixin, models.Model):

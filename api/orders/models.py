@@ -4,6 +4,7 @@ Models para o app orders (pedidos e propostas).
 from django.db import models
 from django.utils import timezone
 from api.utils.models import SoftDeleteMixin
+from api.orders.enums import OrderStatus, ProposalStatus
 
 
 class Order(SoftDeleteMixin, models.Model):
@@ -11,12 +12,6 @@ class Order(SoftDeleteMixin, models.Model):
     Pedido de serviço feito pelo cliente.
     Representa uma solicitação de serviço que pode receber propostas de prestadores.
     """
-    class OrderStatus(models.TextChoices):
-        PENDING = 'PENDING', 'Pendente'
-        ACCEPTED = 'ACCEPTED', 'Aceito'
-        IN_PROGRESS = 'IN_PROGRESS', 'Em Progresso'
-        COMPLETED = 'COMPLETED', 'Completado'
-        CANCELLED = 'CANCELLED', 'Cancelado'
 
     client = models.ForeignKey(  # type: ignore
         'accounts.ClientProfile',
@@ -66,8 +61,8 @@ class Order(SoftDeleteMixin, models.Model):
 
     status = models.CharField(  # type: ignore
         max_length=20,
-        choices=OrderStatus.choices,
-        default=OrderStatus.PENDING,
+        choices=OrderStatus.choices(),
+        default=OrderStatus.PENDING.value,
         verbose_name='Status',
         help_text='Status atual do pedido'
     )
@@ -101,26 +96,26 @@ class Order(SoftDeleteMixin, models.Model):
     @property
     def is_pending(self):
         """Retorna True se o pedido está pendente."""
-        return self.status == self.OrderStatus.PENDING
+        return self.status == OrderStatus.PENDING.value
 
     @property
     def is_accepted(self):
         """Retorna True se o pedido foi aceito."""
-        return self.status == self.OrderStatus.ACCEPTED
+        return self.status == OrderStatus.ACCEPTED.value
 
     @property
     def is_completed(self):
         """Retorna True se o pedido foi completado."""
-        return self.status == self.OrderStatus.COMPLETED
+        return self.status == OrderStatus.COMPLETED.value
 
     @property
     def is_cancelled(self):
         """Retorna True se o pedido foi cancelado."""
-        return self.status == self.OrderStatus.CANCELLED
+        return self.status == OrderStatus.CANCELLED.value
 
     def can_be_cancelled(self):
         """Retorna True se o pedido pode ser cancelado."""
-        return self.status in [self.OrderStatus.PENDING, self.OrderStatus.ACCEPTED]
+        return self.status in [OrderStatus.PENDING.value, OrderStatus.ACCEPTED.value]
 
 
 class Proposal(SoftDeleteMixin, models.Model):
@@ -128,11 +123,6 @@ class Proposal(SoftDeleteMixin, models.Model):
     Proposta feita por um prestador em resposta a um pedido.
     Representa uma oferta de serviço com preço e prazo estimado.
     """
-    class ProposalStatus(models.TextChoices):
-        PENDING = 'PENDING', 'Pendente'
-        ACCEPTED = 'ACCEPTED', 'Aceita'
-        DECLINED = 'DECLINED', 'Recusada'
-        EXPIRED = 'EXPIRED', 'Expirada'
 
     order = models.ForeignKey(  # type: ignore
         Order,
@@ -169,8 +159,8 @@ class Proposal(SoftDeleteMixin, models.Model):
 
     status = models.CharField(  # type: ignore
         max_length=20,
-        choices=ProposalStatus.choices,
-        default=ProposalStatus.PENDING,
+        choices=ProposalStatus.choices(),
+        default=ProposalStatus.PENDING.value,
         verbose_name='Status',
         help_text='Status atual da proposta'
     )
@@ -211,12 +201,12 @@ class Proposal(SoftDeleteMixin, models.Model):
     @property
     def is_pending(self):
         """Retorna True se a proposta está pendente."""
-        return self.status == self.ProposalStatus.PENDING
+        return self.status == ProposalStatus.PENDING.value
 
     @property
     def is_accepted(self):
         """Retorna True se a proposta foi aceita."""
-        return self.status == self.ProposalStatus.ACCEPTED
+        return self.status == ProposalStatus.ACCEPTED.value
 
     @property
     def is_expired(self):
@@ -227,8 +217,8 @@ class Proposal(SoftDeleteMixin, models.Model):
 
     def can_be_accepted(self):
         """Retorna True se a proposta pode ser aceita."""
-        return self.status == self.ProposalStatus.PENDING and not self.is_expired
+        return self.status == ProposalStatus.PENDING.value and not self.is_expired
 
     def can_be_declined(self):
         """Retorna True se a proposta pode ser recusada."""
-        return self.status == self.ProposalStatus.PENDING
+        return self.status == ProposalStatus.PENDING.value
