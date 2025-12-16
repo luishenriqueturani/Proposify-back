@@ -1,0 +1,197 @@
+# Proposify Backend - Regras e Padrões do Projeto
+
+## 📋 Visão Geral
+Este é um projeto Django REST Framework para uma plataforma de Marketplace de Serviços.
+- API REST pura (sem views/telas)
+- Comunicação via endpoints REST e WebSocket
+- Python 3.14
+- Django 5.2.8
+- PostgreSQL como banco de dados
+
+## 🎯 Padrões de Código
+
+### Estrutura de Arquivos
+- **Models**: Sempre em `models.py` dentro de cada app
+- **Enums**: Criar arquivo `enums.py` separado para cada app quando houver choices/constantes
+- **Views**: Sempre em `views.py` (DRF ViewSets/APIViews)
+- **Serializers**: Criar arquivo `serializers.py` separado
+- **URLs**: Sempre em `urls.py` dentro de cada app
+- **Tests**: Sempre em `tests.py` ou arquivos `test_*.py`
+
+### Nomenclatura
+- **Classes**: PascalCase (ex: `OrderStatus`, `UserType`)
+- **Funções/Métodos**: snake_case (ex: `get_user_profile`, `can_be_cancelled`)
+- **Variáveis**: snake_case (ex: `user_type`, `order_status`)
+- **Constantes**: UPPER_SNAKE_CASE (ex: `MAX_RETRIES`, `DEFAULT_TIMEOUT`)
+- **Arquivos**: snake_case (ex: `models.py`, `enums.py`, `serializers.py`)
+
+### Enums e Choices
+- **SEMPRE** usar `enum.Enum` ao invés de `models.TextChoices` ou strings hardcoded
+- Criar arquivo `enums.py` separado em cada app quando houver choices
+- Enums devem herdar de `str, Enum` para compatibilidade com Django
+- Implementar método `choices()` que retorna tuplas (value, label)
+- Implementar propriedade `label` para labels legíveis
+- Usar `.value` ao comparar ou atribuir valores de enum
+
+**Exemplo:**
+```python
+# api/orders/enums.py
+from enum import Enum
+
+class OrderStatus(str, Enum):
+    PENDING = 'PENDING'
+    ACCEPTED = 'ACCEPTED'
+    
+    @property
+    def label(self):
+        labels = {'PENDING': 'Pendente', 'ACCEPTED': 'Aceito'}
+        return labels.get(self.value, self.value)
+    
+    @classmethod
+    def choices(cls):
+        return [(member.value, member.label) for member in cls]
+```
+
+### Models Django
+- **SEMPRE** usar `SoftDeleteMixin` para modelos que precisam de soft delete
+- Adicionar `# type: ignore` em campos de modelo para suprimir warnings do type checker
+- Usar `verbose_name` e `help_text` em todos os campos
+- Adicionar índices apropriados em `Meta.indexes`
+- Implementar `__str__` em todos os modelos
+- Usar `related_name` explícito em ForeignKeys e OneToOneFields
+
+**Exemplo:**
+```python
+class Order(SoftDeleteMixin, models.Model):
+    status = models.CharField(  # type: ignore
+        max_length=20,
+        choices=OrderStatus.choices(),
+        default=OrderStatus.PENDING.value,
+        verbose_name='Status',
+        help_text='Status atual do pedido'
+    )
+```
+
+### Type Hints e Type Checking
+- Adicionar `# type: ignore` em campos de modelo Django
+- Adicionar `# pyright: reportIncompatibleVariableOverride=false` quando necessário
+- Usar `# noqa: E501` para linhas longas quando necessário
+- Configurar `pyrightconfig.json` e `pyproject.toml` para type checking
+
+### Imports
+- Ordem: stdlib, third-party, local
+- Usar imports absolutos (ex: `from api.accounts.models import User`)
+- Agrupar imports relacionados
+
+### Commits Git
+- Usar Conventional Commits:
+  - `feat:` para novas funcionalidades
+  - `fix:` para correções de bugs
+  - `refactor:` para refatorações
+  - `docs:` para documentação
+  - `test:` para testes
+  - `chore:` para tarefas de manutenção
+- Mensagens em português
+- Descrição detalhada do que foi feito
+
+**Exemplo:**
+```
+feat: adiciona modelos Order e Proposal
+
+- Cria modelo Order (pedido de serviço feito pelo cliente)
+- Cria modelo Proposal (proposta feita por prestador)
+- Adiciona Soft Delete (deleted_at) em ambos modelos
+- Implementa status choices: OrderStatus e ProposalStatus
+```
+
+### Soft Delete
+- **SEMPRE** usar `SoftDeleteMixin` para modelos que precisam de soft delete
+- Usar `SoftDeleteManager` para filtrar objetos deletados automaticamente
+- Usar `all_objects` para acessar todos os objetos (incluindo deletados)
+- Usar `deleted_objects` para acessar apenas objetos deletados
+- Usar `restore()` para restaurar objetos deletados
+- Usar `hard_delete()` para deletar permanentemente
+
+### Migrations
+- Criar migrations após mudanças em modelos
+- Aplicar migrations após criar
+- Verificar com `python manage.py check` antes de commitar
+- Nunca editar migrations já aplicadas
+- Para alterações que modifiquem tabelas de models já criados, utilizar alter table ou comandos que modifiquem a tabela, nunca mudar a migration anterior
+
+### Testes
+- Criar testes unitários para modelos e lógica de negócio
+- Criar testes de integração para endpoints
+- Usar `TestCase` do Django
+- Testar soft delete, validações, e métodos customizados
+
+### Documentação
+- Docstrings em português para todas as classes e funções públicas
+- Usar formato Google/NumPy style
+- Documentar parâmetros, retornos e exceções
+- Adicionar exemplos quando relevante
+- Arquivos de documentação devem ficar dentro da pasta docs/ e ter um nome para que seja fácil de saber do que se trata
+- Se o código for ser criado com comentário muito grandes (mais de 5 linhas de comentário), crie um arquivo documentando, no comentário apenas diga onde está o arquivo de documentação
+
+**Exemplo:**
+```python
+def can_be_cancelled(self):
+    """
+    Retorna True se o pedido pode ser cancelado.
+    
+    Returns:
+        bool: True se o status permite cancelamento
+    """
+    return self.status in [OrderStatus.PENDING.value, OrderStatus.ACCEPTED.value]
+```
+
+### Configurações Django
+- Settings organizados em `base.py`, `dev.py`, `prod.py`
+- Usar `python-decouple` para variáveis de ambiente
+- Configurar logging estruturado (JSON)
+- Configurar Sentry condicionalmente (apenas se DSN fornecido)
+
+### Segurança
+- **NUNCA** commitar credenciais ou secrets
+- Usar variáveis de ambiente para configurações sensíveis
+- Validar inputs em serializers
+- Usar permissões apropriadas em views
+
+### Performance
+- Adicionar índices em campos frequentemente consultados
+- Usar `select_related` e `prefetch_related` quando apropriado
+- Evitar N+1 queries
+
+### Logging
+- Usar logging estruturado (JSON)
+- Níveis apropriados: DEBUG (dev), INFO (prod)
+- Logar erros e operações importantes
+
+## 🚫 O Que NÃO Fazer
+
+- ❌ **NUNCA** usar strings hardcoded para choices/enums
+- ❌ **NUNCA** commitar arquivos `.env` ou secrets
+- ❌ **NUNCA** editar migrations já aplicadas
+- ❌ **NUNCA** usar `models.TextChoices` - sempre usar `enum.Enum`
+- ❌ **NUNCA** criar modelos sem `SoftDeleteMixin` quando apropriado
+- ❌ **NUNCA** esquecer de adicionar `# type: ignore` em campos de modelo
+- ❌ **NUNCA** criar commits sem mensagem descritiva
+- ❌ **NUNCA** executar os comandos do python e de qualquer operação de dependências fora do ambiente venv
+
+## ✅ Checklist Antes de Commitar
+
+- [ ] Código passa em `python manage.py check`
+- [ ] Sem erros de linter (flake8, mypy, pyright)
+- [ ] Migrations criadas e aplicadas (se necessário)
+- [ ] Testes passando (se houver)
+- [ ] Documentação atualizada (se necessário)
+- [ ] Commits seguem padrão Conventional Commits
+- [ ] Mensagem de commit em português e descritiva
+
+## 📝 Notas Importantes
+
+- Sempre operar dentro do venv (`source venv/bin/activate`)
+- Usar `--settings=config.settings.dev` para comandos Django em desenvolvimento
+- Verificar `todo.md` para acompanhar progresso das tarefas
+- Seguir a proposta em `docs/proposta.md` para implementação de features
+
