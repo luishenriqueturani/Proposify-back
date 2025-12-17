@@ -135,10 +135,10 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Testes unitários: Modelo ClientProfile
 - ✅ Testes unitários: Modelo ServiceCategory (relacionamento self)
 - ✅ Testes unitários: Modelo Service
-- ⬜ Testes unitários: Modelo Order (validações, status)
-- ⬜ Testes unitários: Modelo Proposal (validações, expires_at)
-- ⬜ Testes unitários: Modelo ChatRoom
-- ⬜ Testes unitários: Modelo Message (tipos, is_read)
+- ✅ Testes unitários: Modelo Order (validações, status)
+- ✅ Testes unitários: Modelo Proposal (validações, expires_at)
+- ✅ Testes unitários: Modelo ChatRoom
+- ✅ Testes unitários: Modelo Message (tipos, is_read)
 - ⬜ Testes unitários: Modelo SubscriptionPlan
 - ⬜ Testes unitários: Modelo UserSubscription
 - ⬜ Testes unitários: Modelo Payment
