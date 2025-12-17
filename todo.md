@@ -148,10 +148,10 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 
 
 ### 2.11. Documentação da Fase 2
-- ⬜ Documentar modelos no Swagger (schemas)
-- ⬜ Documentar relacionamentos entre modelos
-- ⬜ Adicionar docstrings nos modelos
-- ⬜ Documentar choices/enums (status, tipos de mensagem, etc.)
+- ✅ Documentar modelos no Swagger (schemas)
+- ✅ Documentar relacionamentos entre modelos
+- ✅ Adicionar docstrings nos modelos
+- ✅ Documentar choices/enums (status, tipos de mensagem, etc.)
 
 ---
 

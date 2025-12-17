@@ -9,7 +9,32 @@ from api.utils.models import SoftDeleteMixin
 class Review(SoftDeleteMixin, models.Model):
     """
     Avaliação feita por um usuário sobre outro usuário após conclusão de um pedido.
+    
     Permite que clientes avaliem prestadores e vice-versa.
+    Cada usuário só pode fazer uma avaliação por pedido (constraint única).
+    
+    Relacionamentos:
+        - order: Pedido ao qual a avaliação se refere (ForeignKey para Order)
+        - reviewer: Usuário que fez a avaliação (ForeignKey para User)
+        - reviewed_user: Usuário que foi avaliado (ForeignKey para User)
+    
+    Validações:
+        - rating: Deve estar entre 1 e 5
+        - reviewer != reviewed_user: Um usuário não pode se avaliar
+        - Unique constraint: (order, reviewer) - uma avaliação por usuário por pedido
+    
+    Campos:
+        - rating: Nota de 1 a 5 estrelas (obrigatório)
+        - comment: Comentário opcional sobre a avaliação
+    
+    Exemplo:
+        >>> review = Review.objects.create(
+        ...     order=order,
+        ...     reviewer=client_user,
+        ...     reviewed_user=provider_user,
+        ...     rating=5,
+        ...     comment='Excelente trabalho! Muito profissional.'
+        ... )
     """
     order = models.ForeignKey(  # type: ignore
         'orders.Order',

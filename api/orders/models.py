@@ -10,7 +10,35 @@ from api.orders.enums import OrderStatus, ProposalStatus
 class Order(SoftDeleteMixin, models.Model):
     """
     Pedido de serviço feito pelo cliente.
+    
     Representa uma solicitação de serviço que pode receber propostas de prestadores.
+    Um pedido passa por diferentes status: PENDING → ACCEPTED → IN_PROGRESS → COMPLETED.
+    
+    Relacionamentos:
+        - client: Cliente que fez o pedido (ForeignKey para ClientProfile)
+        - service: Serviço solicitado (ForeignKey para Service)
+        - proposals: Propostas recebidas (relacionamento reverso)
+        - payments: Pagamentos do pedido (relacionamento reverso)
+        - reviews: Avaliações do pedido (relacionamento reverso)
+        - chat_rooms: Salas de chat relacionadas (relacionamento reverso)
+    
+    Status possíveis:
+        - PENDING: Aguardando propostas
+        - ACCEPTED: Proposta aceita
+        - IN_PROGRESS: Serviço em execução
+        - COMPLETED: Serviço finalizado
+        - CANCELLED: Pedido cancelado
+    
+    Exemplo:
+        >>> order = Order.objects.create(
+        ...     client=client_profile,
+        ...     service=service,
+        ...     title='Desenvolvimento de Site',
+        ...     description='Preciso de um site institucional',
+        ...     budget_min=Decimal('5000.00'),
+        ...     budget_max=Decimal('10000.00'),
+        ...     deadline=timezone.now() + timedelta(days=30)
+        ... )
     """
 
     client = models.ForeignKey(  # type: ignore
@@ -121,7 +149,30 @@ class Order(SoftDeleteMixin, models.Model):
 class Proposal(SoftDeleteMixin, models.Model):
     """
     Proposta feita por um prestador em resposta a um pedido.
+    
     Representa uma oferta de serviço com preço e prazo estimado.
+    Uma proposta pode ser aceita, recusada ou expirar automaticamente.
+    
+    Relacionamentos:
+        - order: Pedido ao qual a proposta se refere (ForeignKey para Order)
+        - provider: Prestador que fez a proposta (ForeignKey para ProviderProfile)
+        - payments: Pagamentos da proposta aceita (relacionamento reverso)
+    
+    Status possíveis:
+        - PENDING: Aguardando resposta do cliente
+        - ACCEPTED: Cliente aceitou a proposta
+        - DECLINED: Cliente recusou a proposta
+        - EXPIRED: Prazo de validade expirou
+    
+    Exemplo:
+        >>> proposal = Proposal.objects.create(
+        ...     order=order,
+        ...     provider=provider_profile,
+        ...     message='Posso fazer o serviço em 30 dias',
+        ...     price=Decimal('7500.00'),
+        ...     estimated_days=30,
+        ...     expires_at=timezone.now() + timedelta(days=5)
+        ... )
     """
 
     order = models.ForeignKey(  # type: ignore

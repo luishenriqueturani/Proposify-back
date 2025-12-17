@@ -10,8 +10,41 @@ from api.subscriptions.enums import PaymentStatus
 class Payment(SoftDeleteMixin, models.Model):
     """
     Pagamento de um serviço.
+    
     Representa o pagamento realizado para um pedido/proposta aceita.
     Armazena informações de transação e metadados do gateway de pagamento.
+    
+    Relacionamentos:
+        - order: Pedido ao qual o pagamento se refere (ForeignKey para Order)
+        - proposal: Proposta aceita que gerou o pagamento (ForeignKey para Proposal)
+    
+    Status possíveis:
+        - PENDING: Pagamento pendente
+        - PAID: Pagamento confirmado
+        - FAILED: Pagamento falhou
+        - REFUNDED: Pagamento reembolsado
+    
+    Campos importantes:
+        - amount: Valor do pagamento
+        - payment_method: Método de pagamento (credit_card, pix, boleto, etc.)
+        - transaction_id: ID único da transação no gateway
+        - payment_date: Data em que o pagamento foi realizado
+        - metadata: Informações adicionais do gateway (JSON)
+    
+    Métodos:
+        - mark_as_paid(): Marca o pagamento como pago
+        - mark_as_failed(): Marca o pagamento como falhou
+        - mark_as_refunded(): Marca o pagamento como reembolsado
+    
+    Exemplo:
+        >>> payment = Payment.objects.create(
+        ...     order=order,
+        ...     proposal=proposal,
+        ...     amount=Decimal('7500.00'),
+        ...     payment_method='credit_card',
+        ...     payment_status=PaymentStatus.PENDING.value
+        ... )
+        >>> payment.mark_as_paid(transaction_id='txn_123456')
     """
     order = models.ForeignKey(  # type: ignore
         'orders.Order',

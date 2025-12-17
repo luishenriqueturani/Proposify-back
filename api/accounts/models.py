@@ -92,13 +92,44 @@ class UserManager(UserManager):
 
 class User(SoftDeleteMixin, AbstractUser):
     """
-    Modelo de usuário customizado.
-
-    Estende AbstractUser e adiciona:
-    - Soft Delete (deleted_at)
+    Modelo de usuário customizado do sistema.
+    
+    Estende AbstractUser do Django e adiciona funcionalidades específicas:
+    - Soft Delete (deleted_at) para exclusão lógica
     - Campos de timestamp (created_at, updated_at)
-    - Campo phone
+    - Campo phone para telefone do usuário
     - Tipo de usuário (CLIENT, PROVIDER, ADMIN)
+    - Email como USERNAME_FIELD (ao invés de username)
+    
+    Relacionamentos:
+        - provider_profile: Perfil de prestador (OneToOne, opcional)
+        - client_profile: Perfil de cliente (OneToOne, opcional)
+        - subscriptions: Assinaturas do usuário (relacionamento reverso)
+        - orders: Pedidos feitos (através de client_profile)
+        - proposals: Propostas feitas (através de provider_profile)
+        - reviews_given: Avaliações feitas pelo usuário (relacionamento reverso)
+        - reviews_received: Avaliações recebidas pelo usuário (relacionamento reverso)
+        - client_chat_rooms: Salas de chat como cliente (relacionamento reverso)
+        - provider_chat_rooms: Salas de chat como prestador (relacionamento reverso)
+        - sent_messages: Mensagens enviadas (relacionamento reverso)
+        - device_tokens: Tokens FCM para notificações push (relacionamento reverso)
+        - admin_actions: Ações administrativas (se for admin, relacionamento reverso)
+    
+    Tipos de usuário:
+        - CLIENT: Cliente (padrão)
+        - PROVIDER: Prestador de serviços
+        - ADMIN: Administrador
+    
+    Nota: Um usuário pode ser CLIENT e PROVIDER ao mesmo tempo, tendo ambos os perfis.
+    
+    Exemplo:
+        >>> user = User.objects.create_user(
+        ...     email='user@example.com',
+        ...     first_name='João',
+        ...     last_name='Silva',
+        ...     password='senha123',
+        ...     user_type=UserType.CLIENT.value
+        ... )
     """
 
     # Campos adicionais
@@ -175,9 +206,32 @@ class User(SoftDeleteMixin, AbstractUser):
 class ProviderProfile(SoftDeleteMixin, models.Model):
     """
     Perfil do prestador de serviços.
-
+    
     Relacionamento OneToOne com User.
-    Armazena informações específicas de prestadores de serviços.
+    Armazena informações específicas de prestadores de serviços, incluindo:
+    - Biografia do prestador
+    - Avaliação média e total de avaliações
+    - Total de pedidos completados
+    - Status de verificação pela plataforma
+    
+    Relacionamentos:
+        - user: Usuário associado (OneToOne com User)
+        - proposals: Propostas feitas pelo prestador (relacionamento reverso)
+    
+    Campos calculados:
+        - rating_avg: Média de avaliações (0.00 a 5.00)
+        - total_reviews: Número total de avaliações recebidas
+        - total_orders_completed: Número de pedidos completados
+    
+    Exemplo:
+        >>> profile = ProviderProfile.objects.create(
+        ...     user=user,
+        ...     bio='Desenvolvedor Full Stack com 10 anos de experiência',
+        ...     rating_avg=Decimal('4.8'),
+        ...     total_reviews=50,
+        ...     total_orders_completed=30,
+        ...     is_verified=True
+        ... )
     """
 
     user = models.OneToOneField(  # type: ignore
@@ -257,9 +311,28 @@ class ProviderProfile(SoftDeleteMixin, models.Model):
 class ClientProfile(SoftDeleteMixin, models.Model):
     """
     Perfil do cliente.
-
+    
     Relacionamento OneToOne com User.
-    Armazena informações específicas de clientes.
+    Armazena informações específicas de clientes, incluindo endereço completo.
+    
+    Relacionamentos:
+        - user: Usuário associado (OneToOne com User)
+        - orders: Pedidos feitos pelo cliente (relacionamento reverso)
+    
+    Campos de endereço:
+        - address: Endereço completo
+        - city: Cidade
+        - state: Estado (UF)
+        - zip_code: CEP
+    
+    Exemplo:
+        >>> profile = ClientProfile.objects.create(
+        ...     user=user,
+        ...     address='Rua das Flores, 123',
+        ...     city='São Paulo',
+        ...     state='SP',
+        ...     zip_code='01234-567'
+        ... )
     """
 
     user = models.OneToOneField(  # type: ignore
