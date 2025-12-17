@@ -124,6 +124,8 @@ feat: adiciona modelos Order e Proposal
 - Criar testes de integração para endpoints
 - Usar `TestCase` do Django
 - Testar soft delete, validações, e métodos customizados
+- Criar arquivos para os mocks, para não reescrevê-los em vários lugares diferentes
+- Quando os testes sendo desenvolvidos passarem, antes de ter como finalizados, rode todos os testes para garantir que outro teste não tenha quebrado
 
 ### Documentação
 - Docstrings em português para todas as classes e funções públicas

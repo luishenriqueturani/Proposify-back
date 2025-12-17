@@ -567,3 +567,336 @@ class ProviderProfileModelTestCase(TestCase):
         
         # Verifica que o usuário é do tipo PROVIDER
         self.assertTrue(self.user.is_provider)
+
+
+class ClientProfileModelTestCase(TestCase):
+    """Testes unitários para o modelo ClientProfile."""
+
+    def setUp(self):
+        """Cria dados de teste."""
+        self.user = User.objects.create_user(
+            email='client@example.com',
+            first_name='Client',
+            last_name='User',
+            password='testpass123',
+            user_type=UserType.CLIENT.value
+        )
+
+    def test_create_client_profile_with_minimal_fields(self):
+        """Testa criação de perfil de cliente com campos mínimos."""
+        profile = ClientProfile.objects.create(user=self.user)
+        
+        self.assertEqual(profile.user, self.user)
+        self.assertIsNone(profile.address)
+        self.assertIsNone(profile.city)
+        self.assertIsNone(profile.state)
+        self.assertIsNone(profile.zip_code)
+        self.assertIsNotNone(profile.created_at)
+        self.assertIsNotNone(profile.updated_at)
+        self.assertIsNone(profile.deleted_at)
+
+    def test_create_client_profile_with_all_fields(self):
+        """Testa criação de perfil de cliente com todos os campos."""
+        profile = ClientProfile.objects.create(
+            user=self.user,
+            address='Rua das Flores, 123',
+            city='São Paulo',
+            state='SP',
+            zip_code='01234-567'
+        )
+        
+        self.assertEqual(profile.address, 'Rua das Flores, 123')
+        self.assertEqual(profile.city, 'São Paulo')
+        self.assertEqual(profile.state, 'SP')
+        self.assertEqual(profile.zip_code, '01234-567')
+
+    def test_one_to_one_relationship(self):
+        """Testa que o relacionamento OneToOne funciona corretamente."""
+        profile = ClientProfile.objects.create(user=self.user)
+        
+        # Acessa o perfil através do relacionamento reverso
+        self.assertEqual(self.user.client_profile, profile)
+        
+        # Um User só pode ter um ClientProfile
+        with self.assertRaises(IntegrityError):
+            ClientProfile.objects.create(user=self.user)
+
+    def test_address_is_optional(self):
+        """Testa que address é opcional."""
+        profile1 = ClientProfile.objects.create(user=self.user)
+        self.assertIsNone(profile1.address)
+        
+        profile2 = ClientProfile.objects.create(
+            user=User.objects.create_user(
+                email='client2@example.com',
+                first_name='Client',
+                last_name='Two',
+                password='testpass123',
+                user_type=UserType.CLIENT.value
+            ),
+            address='Rua Teste, 456'
+        )
+        self.assertEqual(profile2.address, 'Rua Teste, 456')
+
+    def test_city_is_optional(self):
+        """Testa que city é opcional."""
+        profile1 = ClientProfile.objects.create(user=self.user)
+        self.assertIsNone(profile1.city)
+        
+        profile2 = ClientProfile.objects.create(
+            user=User.objects.create_user(
+                email='client3@example.com',
+                first_name='Client',
+                last_name='Three',
+                password='testpass123',
+                user_type=UserType.CLIENT.value
+            ),
+            city='Rio de Janeiro'
+        )
+        self.assertEqual(profile2.city, 'Rio de Janeiro')
+
+    def test_state_is_optional(self):
+        """Testa que state é opcional."""
+        profile1 = ClientProfile.objects.create(user=self.user)
+        self.assertIsNone(profile1.state)
+        
+        profile2 = ClientProfile.objects.create(
+            user=User.objects.create_user(
+                email='client4@example.com',
+                first_name='Client',
+                last_name='Four',
+                password='testpass123',
+                user_type=UserType.CLIENT.value
+            ),
+            state='RJ'
+        )
+        self.assertEqual(profile2.state, 'RJ')
+
+    def test_zip_code_is_optional(self):
+        """Testa que zip_code é opcional."""
+        profile1 = ClientProfile.objects.create(user=self.user)
+        self.assertIsNone(profile1.zip_code)
+        
+        profile2 = ClientProfile.objects.create(
+            user=User.objects.create_user(
+                email='client5@example.com',
+                first_name='Client',
+                last_name='Five',
+                password='testpass123',
+                user_type=UserType.CLIENT.value
+            ),
+            zip_code='20000-000'
+        )
+        self.assertEqual(profile2.zip_code, '20000-000')
+
+    def test_state_max_length(self):
+        """Testa que state tem limite de 2 caracteres."""
+        profile = ClientProfile.objects.create(user=self.user)
+        
+        # Estado válido (2 caracteres)
+        profile.state = 'SP'
+        profile.save()
+        self.assertEqual(profile.state, 'SP')
+        
+        # Estado com mais de 2 caracteres deve ser truncado ou rejeitado
+        # (dependendo da validação do Django)
+        profile.state = 'SPA'  # 3 caracteres
+        with self.assertRaises((ValidationError, ValueError)):
+            profile.full_clean()
+
+    def test_address_max_length(self):
+        """Testa que address tem limite de 255 caracteres."""
+        profile = ClientProfile.objects.create(user=self.user)
+        
+        # Endereço válido
+        profile.address = 'Rua Teste, 123'
+        profile.save()
+        self.assertEqual(profile.address, 'Rua Teste, 123')
+        
+        # Endereço muito longo (mais de 255 caracteres)
+        long_address = 'A' * 256
+        profile.address = long_address
+        with self.assertRaises((ValidationError, ValueError)):
+            profile.full_clean()
+
+    def test_city_max_length(self):
+        """Testa que city tem limite de 100 caracteres."""
+        profile = ClientProfile.objects.create(user=self.user)
+        
+        # Cidade válida
+        profile.city = 'São Paulo'
+        profile.save()
+        self.assertEqual(profile.city, 'São Paulo')
+        
+        # Cidade muito longa (mais de 100 caracteres)
+        long_city = 'A' * 101
+        profile.city = long_city
+        with self.assertRaises((ValidationError, ValueError)):
+            profile.full_clean()
+
+    def test_zip_code_max_length(self):
+        """Testa que zip_code tem limite de 10 caracteres."""
+        profile = ClientProfile.objects.create(user=self.user)
+        
+        # CEP válido
+        profile.zip_code = '01234-567'
+        profile.save()
+        self.assertEqual(profile.zip_code, '01234-567')
+        
+        # CEP muito longo (mais de 10 caracteres)
+        long_zip = '0' * 11
+        profile.zip_code = long_zip
+        with self.assertRaises((ValidationError, ValueError)):
+            profile.full_clean()
+
+    def test_str_representation(self):
+        """Testa a representação string do modelo."""
+        profile = ClientProfile.objects.create(user=self.user)
+        expected = f"Perfil de {self.user.email}"
+        self.assertEqual(str(profile), expected)
+
+    def test_created_at_auto_now_add(self):
+        """Testa que created_at é preenchido automaticamente."""
+        before = timezone.now()
+        profile = ClientProfile.objects.create(user=self.user)
+        after = timezone.now()
+        
+        self.assertIsNotNone(profile.created_at)
+        self.assertGreaterEqual(profile.created_at, before)
+        self.assertLessEqual(profile.created_at, after)
+
+    def test_updated_at_auto_now(self):
+        """Testa que updated_at é atualizado automaticamente."""
+        profile = ClientProfile.objects.create(user=self.user)
+        original_updated_at = profile.updated_at
+        
+        # Aguarda um pouco para garantir diferença de tempo
+        time.sleep(0.01)
+        
+        profile.address = 'Endereço atualizado'
+        profile.save()
+        
+        self.assertGreater(profile.updated_at, original_updated_at)
+
+    def test_soft_delete_functionality(self):
+        """Testa funcionalidade de soft delete."""
+        profile = ClientProfile.objects.create(user=self.user)
+        profile_id = profile.id
+        
+        # Perfil está ativo
+        self.assertIsNone(profile.deleted_at)
+        self.assertTrue(profile.is_alive)
+        self.assertFalse(profile.is_deleted)
+        self.assertEqual(ClientProfile.objects.count(), 1)
+        
+        # Deleta (soft delete)
+        profile.delete()
+        profile.refresh_from_db()
+        
+        # Perfil está deletado
+        self.assertIsNotNone(profile.deleted_at)
+        self.assertFalse(profile.is_alive)
+        self.assertTrue(profile.is_deleted)
+        self.assertEqual(ClientProfile.objects.count(), 0)
+        self.assertEqual(ClientProfile.all_objects.count(), 1)
+        self.assertEqual(ClientProfile.deleted_objects.count(), 1)
+        
+        # Restaura
+        profile.restore()
+        profile.refresh_from_db()
+        
+        # Perfil está ativo novamente
+        self.assertIsNone(profile.deleted_at)
+        self.assertTrue(profile.is_alive)
+        self.assertFalse(profile.is_deleted)
+        self.assertEqual(ClientProfile.objects.count(), 1)
+
+    def test_ordering_by_created_at_desc(self):
+        """Testa que ordenação padrão é por created_at descendente."""
+        # Cria perfis com diferentes timestamps
+        user1 = User.objects.create_user(
+            email='client1@example.com',
+            first_name='Client',
+            last_name='One',
+            password='pass123',
+            user_type=UserType.CLIENT.value
+        )
+        profile1 = ClientProfile.objects.create(user=user1)
+        
+        time.sleep(0.01)
+        
+        user2 = User.objects.create_user(
+            email='client2@example.com',
+            first_name='Client',
+            last_name='Two',
+            password='pass123',
+            user_type=UserType.CLIENT.value
+        )
+        profile2 = ClientProfile.objects.create(user=user2)
+        
+        profiles = list(ClientProfile.objects.all())
+        
+        # profile2 é mais recente, deve aparecer primeiro
+        self.assertEqual(profiles[0], profile2)
+        self.assertEqual(profiles[1], profile1)
+
+    def test_indexes_exist(self):
+        """Testa que os índices foram criados corretamente."""
+        profile = ClientProfile.objects.create(
+            user=self.user,
+            city='São Paulo',
+            state='SP'
+        )
+        
+        # Testa queries que usam os índices (verifica que não há erros)
+        ClientProfile.objects.filter(city='São Paulo', state='SP').first()
+        ClientProfile.objects.filter(deleted_at__isnull=True).first()
+        
+        # Verifica que os índices estão definidos no Meta
+        index_names = [idx.name for idx in ClientProfile._meta.indexes]
+        self.assertIn('client_location_idx', index_names)
+        self.assertIn('client_deleted_at_idx', index_names)
+
+    def test_location_index(self):
+        """Testa que o índice composto (city, state) funciona corretamente."""
+        profile1 = ClientProfile.objects.create(
+            user=self.user,
+            city='São Paulo',
+            state='SP'
+        )
+        
+        user2 = User.objects.create_user(
+            email='client6@example.com',
+            first_name='Client',
+            last_name='Six',
+            password='pass123',
+            user_type=UserType.CLIENT.value
+        )
+        profile2 = ClientProfile.objects.create(
+            user=user2,
+            city='Rio de Janeiro',
+            state='RJ'
+        )
+        
+        # Busca por cidade e estado usando o índice
+        sp_profiles = ClientProfile.objects.filter(city='São Paulo', state='SP')
+        self.assertEqual(sp_profiles.count(), 1)
+        self.assertIn(profile1, sp_profiles)
+        
+        rj_profiles = ClientProfile.objects.filter(city='Rio de Janeiro', state='RJ')
+        self.assertEqual(rj_profiles.count(), 1)
+        self.assertIn(profile2, rj_profiles)
+
+    def test_user_relationship(self):
+        """Testa que o relacionamento com User funciona corretamente."""
+        profile = ClientProfile.objects.create(user=self.user)
+        
+        # Verifica que o perfil está associado ao usuário correto
+        self.assertEqual(profile.user, self.user)
+        self.assertEqual(profile.user.email, 'client@example.com')
+        
+        # Verifica que o usuário pode acessar o perfil
+        self.assertEqual(self.user.client_profile, profile)
+        
+        # Verifica que o usuário é do tipo CLIENT
+        self.assertTrue(self.user.is_client)
