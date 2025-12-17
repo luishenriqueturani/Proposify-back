@@ -142,9 +142,10 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Testes unitários: Modelo SubscriptionPlan
 - ✅ Testes unitários: Modelo UserSubscription
 - ✅ Testes unitários: Modelo Payment
-- ⬜ Testes unitários: Modelo Review (validação rating, unique constraint)
-- ⬜ Testes de integração: Relacionamentos entre modelos
-- ⬜ Testes de integração: Soft delete em todos os modelos
+- ✅ Testes unitários: Modelo Review (validação rating, unique constraint)
+- ✅ Testes de integração: Relacionamentos entre modelos
+- ✅ Testes de integração: Soft delete em todos os modelos
+
 
 ### 2.11. Documentação da Fase 2
 - ⬜ Documentar modelos no Swagger (schemas)
