@@ -139,9 +139,9 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Testes unitários: Modelo Proposal (validações, expires_at)
 - ✅ Testes unitários: Modelo ChatRoom
 - ✅ Testes unitários: Modelo Message (tipos, is_read)
-- ⬜ Testes unitários: Modelo SubscriptionPlan
-- ⬜ Testes unitários: Modelo UserSubscription
-- ⬜ Testes unitários: Modelo Payment
+- ✅ Testes unitários: Modelo SubscriptionPlan
+- ✅ Testes unitários: Modelo UserSubscription
+- ✅ Testes unitários: Modelo Payment
 - ⬜ Testes unitários: Modelo Review (validação rating, unique constraint)
 - ⬜ Testes de integração: Relacionamentos entre modelos
 - ⬜ Testes de integração: Soft delete em todos os modelos
