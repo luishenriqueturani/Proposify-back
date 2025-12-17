@@ -130,8 +130,8 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Aplicar migrations
 
 ### 2.10. Testes da Fase 2
-- ⬜ Testes unitários: Modelo User (validações, métodos)
-- ⬜ Testes unitários: Modelo ProviderProfile
+- ✅ Testes unitários: Modelo User (validações, métodos)
+- ✅ Testes unitários: Modelo ProviderProfile
 - ⬜ Testes unitários: Modelo ClientProfile
 - ⬜ Testes unitários: Modelo ServiceCategory (relacionamento self)
 - ⬜ Testes unitários: Modelo Service

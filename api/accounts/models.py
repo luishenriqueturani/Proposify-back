@@ -2,11 +2,92 @@
 Models para o app accounts (usuários, perfis, autenticação).
 """
 # pyright: reportIncompatibleVariableOverride=false
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from api.utils.models import SoftDeleteMixin
-from api.utils.managers import SoftDeleteManager
+from api.utils.managers import SoftDeleteQuerySet
 from api.accounts.enums import UserType
+
+
+class UserQuerySet(SoftDeleteQuerySet):
+    """QuerySet customizado para User com funcionalidades de soft delete."""
+
+
+class UserManager(UserManager):
+    """
+    Manager customizado que combina UserManager do Django com Soft Delete.
+    
+    Sobrescreve create_user e create_superuser para usar email ao invés de username.
+    Adiciona funcionalidades de soft delete.
+    """
+
+    def create_user(self, email, password=None, **extra_fields):
+        """
+        Cria e salva um usuário com o email e senha fornecidos.
+        
+        Args:
+            email: Email do usuário (usado como USERNAME_FIELD)
+            password: Senha do usuário
+            **extra_fields: Campos extras do modelo User
+            
+        Returns:
+            User: Instância do usuário criado
+        """
+        if not email:
+            raise ValueError('O email é obrigatório')
+        email = self.normalize_email(email)
+        # Usa email como username também (para compatibilidade com AbstractUser)
+        extra_fields.setdefault('username', email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        """
+        Cria e salva um superusuário com o email e senha fornecidos.
+        
+        Args:
+            email: Email do superusuário (usado como USERNAME_FIELD)
+            password: Senha do superusuário
+            **extra_fields: Campos extras do modelo User
+            
+        Returns:
+            User: Instância do superusuário criado
+        """
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superusuário deve ter is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superusuário deve ter is_superuser=True.')
+        
+        return self.create_user(email, password, **extra_fields)
+
+    def get_queryset(self):
+        """Retorna queryset filtrando registros deletados."""
+        return UserQuerySet(self.model, using=self._db).filter(
+            deleted_at__isnull=True
+        )
+
+    def all_objects(self):
+        """Retorna todos os registros, incluindo deletados."""
+        return UserQuerySet(self.model, using=self._db)
+
+    def deleted_objects(self):
+        """Retorna apenas registros deletados."""
+        return UserQuerySet(self.model, using=self._db).filter(
+            deleted_at__isnull=False
+        )
+
+    def alive(self):
+        """Retorna apenas registros não deletados (alias para get_queryset)."""
+        return self.get_queryset()
+
+    def dead(self):
+        """Retorna apenas registros deletados."""
+        return self.deleted_objects()
 
 
 class User(SoftDeleteMixin, AbstractUser):
@@ -59,10 +140,8 @@ class User(SoftDeleteMixin, AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
-    # Redefinir objects para resolver conflito entre SoftDeleteMixin e AbstractUser
-    # SoftDeleteManager é compatível em runtime, mas o type checker não reconhece
-    # a compatibilidade com UserManager do AbstractUser
-    objects = SoftDeleteManager()  # type: ignore[assignment]
+    # Manager customizado que combina UserManager com Soft Delete
+    objects = UserManager()  # type: ignore[assignment]
 
     class Meta:
         verbose_name = 'Usuário'
