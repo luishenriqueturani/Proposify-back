@@ -158,15 +158,15 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 ## 👨‍💼 FASE 3: App Admin
 
 ### 3.1. Serializers
-- ⬜ Criar serializers para dashboard/stats
-- ⬜ Criar serializers para relatórios
+- ✅ Criar serializers para dashboard/stats
+- ✅ Criar serializers para relatórios
 
 ### 3.2. ViewSets
-- ⬜ Criar `AdminDashboardViewSet`
-- ⬜ Criar `AdminUserViewSet`
-- ⬜ Criar `AdminOrderViewSet`
-- ⬜ Criar `AdminProposalViewSet`
-- ⬜ Criar `AdminPaymentViewSet`
+- ✅ Criar `AdminDashboardViewSet`
+- ✅ Criar `AdminUserViewSet`
+- ✅ Criar `AdminOrderViewSet`
+- ✅ Criar `AdminProposalViewSet`
+- ✅ Criar `AdminPaymentViewSet`
 - ⬜ Criar `AdminSubscriptionViewSet`
 - ⬜ Criar `AdminReviewViewSet`
 - ⬜ Criar `AdminAuditLogViewSet`
