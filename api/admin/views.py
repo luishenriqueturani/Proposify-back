@@ -839,7 +839,10 @@ class AdminAuditLogViewSet(viewsets.ReadOnlyModelViewSet):
                     'target_model', 'target_id', 'description', 'metadata',
                     'ip_address', 'created_at'
                 ]
-                read_only_fields = '__all__'
+                read_only_fields = [
+                    'id', 'admin_user', 'action_type', 'target_model',
+                    'target_id', 'description', 'metadata', 'ip_address', 'created_at'
+                ]
             
             def get_admin_email(self, obj):
                 return obj.admin_user.email if obj.admin_user else None

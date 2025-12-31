@@ -196,13 +196,13 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Integrar com URLs principais
 
 ### 3.6. Testes da Fase 3
-- ⬜ Testes unitários: Serializers de dashboard/stats
-- ⬜ Testes de integração: AdminDashboardViewSet (estatísticas)
-- ⬜ Testes de integração: AdminUserViewSet (CRUD, suspend, activate)
-- ⬜ Testes de integração: AdminOrderViewSet, AdminProposalViewSet, etc.
-- ⬜ Testes de integração: Permissões (IsAdmin)
-- ⬜ Testes de integração: Middleware de auditoria (AdminAction)
-- ⬜ Testes E2E: Admin acessa dashboard → gerencia usuários → verifica logs de auditoria
+- ✅ Testes unitários: Serializers de dashboard/stats
+- ✅ Testes de integração: AdminDashboardViewSet (estatísticas)
+- ✅ Testes de integração: AdminUserViewSet (CRUD, suspend, activate)
+- ✅ Testes de integração: AdminOrderViewSet, AdminProposalViewSet, etc.
+- ✅ Testes de integração: Permissões (IsAdmin)
+- ✅ Testes de integração: Middleware de auditoria (AdminAction)
+- ✅ Testes E2E: Admin acessa dashboard → gerencia usuários → verifica logs de auditoria
 
 ### 3.7. Documentação da Fase 3
 - ⬜ Documentar endpoints do app admin no Swagger
