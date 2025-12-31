@@ -167,11 +167,11 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Criar `AdminOrderViewSet`
 - ✅ Criar `AdminProposalViewSet`
 - ✅ Criar `AdminPaymentViewSet`
-- ⬜ Criar `AdminSubscriptionViewSet`
-- ⬜ Criar `AdminReviewViewSet`
-- ⬜ Criar `AdminAuditLogViewSet`
-- ⬜ Implementar permissões (IsAdmin)
-- ⬜ Implementar lógica de suspender/ativar usuários
+- ✅ Criar `AdminSubscriptionViewSet`
+- ✅ Criar `AdminReviewViewSet`
+- ✅ Criar `AdminAuditLogViewSet`
+- ✅ Implementar permissões (IsAdmin)
+- ✅ Implementar lógica de suspender/ativar usuários
 
 ### 3.3. Endpoints
 - ⬜ GET `/admin/dashboard/stats/` - Estatísticas do dashboard
