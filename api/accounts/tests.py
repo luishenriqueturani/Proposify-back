@@ -5,10 +5,21 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.utils import timezone
+from django.urls import reverse
+from rest_framework.test import APITestCase
+from rest_framework import status
 from decimal import Decimal
 import time
+import uuid
 from api.accounts.models import User, ProviderProfile, ClientProfile
 from api.accounts.enums import UserType
+from api.accounts.serializers import (
+    UserRegisterSerializer,
+    UserSerializer,
+    UserUpdateSerializer,
+    PasswordResetRequestSerializer,
+    PasswordResetConfirmSerializer,
+)
 
 
 class UserModelTestCase(TestCase):
@@ -900,3 +911,539 @@ class ClientProfileModelTestCase(TestCase):
         
         # Verifica que o usuário é do tipo CLIENT
         self.assertTrue(self.user.is_client)
+
+
+# =============================================================================
+# Testes de Serializers de Autenticação
+# =============================================================================
+
+class UserRegisterSerializerTestCase(TestCase):
+    """Testes para o UserRegisterSerializer."""
+
+    def test_valid_registration_data(self):
+        """Testa registro com dados válidos."""
+        data = {
+            'email': f'test_{uuid.uuid4().hex[:8]}@example.com',
+            'first_name': 'João',
+            'last_name': 'Silva',
+            'password': 'senha@segura123',
+            'password_confirm': 'senha@segura123',
+            'user_type': UserType.CLIENT.value,
+        }
+        serializer = UserRegisterSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+
+    def test_password_mismatch(self):
+        """Testa que senhas diferentes geram erro."""
+        data = {
+            'email': f'test_{uuid.uuid4().hex[:8]}@example.com',
+            'first_name': 'João',
+            'last_name': 'Silva',
+            'password': 'senha@segura123',
+            'password_confirm': 'outrasenha123',
+            'user_type': UserType.CLIENT.value,
+        }
+        serializer = UserRegisterSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('password_confirm', serializer.errors)
+
+    def test_duplicate_email(self):
+        """Testa que email duplicado gera erro."""
+        email = f'test_{uuid.uuid4().hex[:8]}@example.com'
+        User.objects.create_user(
+            email=email,
+            first_name='Existing',
+            last_name='User',
+            password='testpass123'
+        )
+        data = {
+            'email': email,
+            'first_name': 'João',
+            'last_name': 'Silva',
+            'password': 'senha@segura123',
+            'password_confirm': 'senha@segura123',
+        }
+        serializer = UserRegisterSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('email', serializer.errors)
+
+    def test_cannot_register_as_admin(self):
+        """Testa que não é possível registrar como ADMIN."""
+        data = {
+            'email': f'test_{uuid.uuid4().hex[:8]}@example.com',
+            'first_name': 'João',
+            'last_name': 'Silva',
+            'password': 'senha@segura123',
+            'password_confirm': 'senha@segura123',
+            'user_type': UserType.ADMIN.value,
+        }
+        serializer = UserRegisterSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('user_type', serializer.errors)
+
+    def test_creates_client_profile(self):
+        """Testa que perfil de cliente é criado automaticamente."""
+        data = {
+            'email': f'test_{uuid.uuid4().hex[:8]}@example.com',
+            'first_name': 'João',
+            'last_name': 'Silva',
+            'password': 'senha@segura123',
+            'password_confirm': 'senha@segura123',
+            'user_type': UserType.CLIENT.value,
+        }
+        serializer = UserRegisterSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        user = serializer.save()
+        self.assertTrue(hasattr(user, 'client_profile'))
+
+    def test_creates_provider_profile(self):
+        """Testa que perfil de prestador é criado automaticamente."""
+        data = {
+            'email': f'test_{uuid.uuid4().hex[:8]}@example.com',
+            'first_name': 'João',
+            'last_name': 'Silva',
+            'password': 'senha@segura123',
+            'password_confirm': 'senha@segura123',
+            'user_type': UserType.PROVIDER.value,
+        }
+        serializer = UserRegisterSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        user = serializer.save()
+        self.assertTrue(hasattr(user, 'provider_profile'))
+
+
+class UserSerializerTestCase(TestCase):
+    """Testes para o UserSerializer."""
+
+    def setUp(self):
+        """Cria usuário de teste."""
+        self.user = User.objects.create_user(
+            email=f'test_{uuid.uuid4().hex[:8]}@example.com',
+            first_name='João',
+            last_name='Silva',
+            password='testpass123',
+        )
+        ClientProfile.objects.create(user=self.user)
+
+    def test_serializes_user_data(self):
+        """Testa serialização de dados do usuário."""
+        serializer = UserSerializer(self.user)
+        data = serializer.data
+        
+        self.assertEqual(data['email'], self.user.email)
+        self.assertEqual(data['first_name'], 'João')
+        self.assertEqual(data['last_name'], 'Silva')
+        self.assertEqual(data['full_name'], 'João Silva')
+        self.assertTrue(data['has_client_profile'])
+        self.assertFalse(data['has_provider_profile'])
+
+    def test_read_only_fields(self):
+        """Testa que campos read_only não podem ser alterados."""
+        serializer = UserSerializer(self.user, data={'email': 'new@example.com'}, partial=True)
+        self.assertTrue(serializer.is_valid())
+        # email não deve estar nos validated_data pois é read_only
+        self.assertNotIn('email', serializer.validated_data)
+
+
+class UserUpdateSerializerTestCase(TestCase):
+    """Testes para o UserUpdateSerializer."""
+
+    def setUp(self):
+        """Cria usuário de teste."""
+        self.user = User.objects.create_user(
+            email=f'test_{uuid.uuid4().hex[:8]}@example.com',
+            first_name='João',
+            last_name='Silva',
+            password='testpass123',
+        )
+
+    def test_update_user_data(self):
+        """Testa atualização de dados do usuário."""
+        serializer = UserUpdateSerializer(
+            self.user,
+            data={'first_name': 'José', 'phone': '11999998888'},
+            partial=True
+        )
+        self.assertTrue(serializer.is_valid())
+        user = serializer.save()
+        self.assertEqual(user.first_name, 'José')
+        self.assertEqual(user.phone, '11999998888')
+
+    def test_phone_validation_strips_non_numeric(self):
+        """Testa que telefone mantém apenas números."""
+        serializer = UserUpdateSerializer(
+            self.user,
+            data={'phone': '(11) 99999-8888'},
+            partial=True
+        )
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.validated_data['phone'], '11999998888')
+
+
+# =============================================================================
+# Testes de Endpoints de Autenticação
+# =============================================================================
+
+class RegisterViewTestCase(APITestCase):
+    """Testes para o endpoint de registro."""
+
+    def test_register_client_success(self):
+        """Testa registro de cliente com sucesso."""
+        data = {
+            'email': f'newuser_{uuid.uuid4().hex[:8]}@example.com',
+            'first_name': 'João',
+            'last_name': 'Silva',
+            'password': 'senha@segura123',
+            'password_confirm': 'senha@segura123',
+            'user_type': UserType.CLIENT.value,
+        }
+        response = self.client.post(reverse('auth-register'), data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('message', response.data)
+        self.assertIn('user', response.data)
+        self.assertEqual(response.data['user']['user_type'], UserType.CLIENT.value)
+
+    def test_register_provider_success(self):
+        """Testa registro de prestador com sucesso."""
+        data = {
+            'email': f'provider_{uuid.uuid4().hex[:8]}@example.com',
+            'first_name': 'Maria',
+            'last_name': 'Santos',
+            'password': 'senha@segura123',
+            'password_confirm': 'senha@segura123',
+            'user_type': UserType.PROVIDER.value,
+        }
+        response = self.client.post(reverse('auth-register'), data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['user']['user_type'], UserType.PROVIDER.value)
+
+    def test_register_invalid_data(self):
+        """Testa registro com dados inválidos."""
+        data = {
+            'email': 'invalid-email',
+            'first_name': '',
+            'password': '123',  # Muito curta
+            'password_confirm': '456',
+        }
+        response = self.client.post(reverse('auth-register'), data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_register_duplicate_email(self):
+        """Testa registro com email duplicado."""
+        email = f'duplicate_{uuid.uuid4().hex[:8]}@example.com'
+        User.objects.create_user(
+            email=email,
+            first_name='Existing',
+            last_name='User',
+            password='testpass123'
+        )
+        data = {
+            'email': email,
+            'first_name': 'João',
+            'last_name': 'Silva',
+            'password': 'senha@segura123',
+            'password_confirm': 'senha@segura123',
+        }
+        response = self.client.post(reverse('auth-register'), data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class LoginViewTestCase(APITestCase):
+    """Testes para o endpoint de login."""
+
+    def setUp(self):
+        """Cria usuário de teste."""
+        self.email = f'login_{uuid.uuid4().hex[:8]}@example.com'
+        self.password = 'senha@segura123'
+        self.user = User.objects.create_user(
+            email=self.email,
+            first_name='João',
+            last_name='Silva',
+            password=self.password,
+        )
+
+    def test_login_success(self):
+        """Testa login com credenciais válidas."""
+        data = {'email': self.email, 'password': self.password}
+        response = self.client.post(reverse('auth-login'), data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('access', response.data)
+        self.assertIn('refresh', response.data)
+        self.assertIn('user', response.data)
+
+    def test_login_invalid_credentials(self):
+        """Testa login com credenciais inválidas."""
+        data = {'email': self.email, 'password': 'wrongpassword'}
+        response = self.client.post(reverse('auth-login'), data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_login_inactive_user(self):
+        """Testa login de usuário inativo."""
+        self.user.is_active = False
+        self.user.save()
+        
+        data = {'email': self.email, 'password': self.password}
+        response = self.client.post(reverse('auth-login'), data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class LogoutViewTestCase(APITestCase):
+    """Testes para o endpoint de logout."""
+
+    def setUp(self):
+        """Cria usuário e obtém tokens."""
+        self.email = f'logout_{uuid.uuid4().hex[:8]}@example.com'
+        self.password = 'senha@segura123'
+        self.user = User.objects.create_user(
+            email=self.email,
+            first_name='João',
+            last_name='Silva',
+            password=self.password,
+        )
+        # Faz login para obter tokens
+        response = self.client.post(
+            reverse('auth-login'),
+            {'email': self.email, 'password': self.password},
+            format='json'
+        )
+        self.access_token = response.data['access']
+        self.refresh_token = response.data['refresh']
+
+    def test_logout_success(self):
+        """Testa logout com token válido."""
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        response = self.client.post(
+            reverse('auth-logout'),
+            {'refresh': self.refresh_token},
+            format='json'
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('message', response.data)
+
+    def test_logout_without_refresh_token(self):
+        """Testa logout sem token de refresh."""
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        response = self.client.post(reverse('auth-logout'), {}, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_logout_unauthenticated(self):
+        """Testa logout sem autenticação."""
+        response = self.client.post(
+            reverse('auth-logout'),
+            {'refresh': self.refresh_token},
+            format='json'
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class RefreshViewTestCase(APITestCase):
+    """Testes para o endpoint de refresh de token."""
+
+    def setUp(self):
+        """Cria usuário e obtém tokens."""
+        self.email = f'refresh_{uuid.uuid4().hex[:8]}@example.com'
+        self.password = 'senha@segura123'
+        self.user = User.objects.create_user(
+            email=self.email,
+            first_name='João',
+            last_name='Silva',
+            password=self.password,
+        )
+        # Faz login para obter tokens
+        response = self.client.post(
+            reverse('auth-login'),
+            {'email': self.email, 'password': self.password},
+            format='json'
+        )
+        self.refresh_token = response.data['refresh']
+
+    def test_refresh_success(self):
+        """Testa refresh de token com sucesso."""
+        response = self.client.post(
+            reverse('auth-refresh'),
+            {'refresh': self.refresh_token},
+            format='json'
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('access', response.data)
+
+    def test_refresh_invalid_token(self):
+        """Testa refresh com token inválido."""
+        response = self.client.post(
+            reverse('auth-refresh'),
+            {'refresh': 'invalid-token'},
+            format='json'
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class MeViewTestCase(APITestCase):
+    """Testes para o endpoint /auth/me/."""
+
+    def setUp(self):
+        """Cria usuário e autentica."""
+        self.email = f'me_{uuid.uuid4().hex[:8]}@example.com'
+        self.password = 'senha@segura123'
+        self.user = User.objects.create_user(
+            email=self.email,
+            first_name='João',
+            last_name='Silva',
+            password=self.password,
+        )
+        ClientProfile.objects.create(user=self.user)
+        # Faz login para obter token
+        response = self.client.post(
+            reverse('auth-login'),
+            {'email': self.email, 'password': self.password},
+            format='json'
+        )
+        self.access_token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+
+    def test_get_me_success(self):
+        """Testa GET /auth/me/ com sucesso."""
+        response = self.client.get(reverse('auth-me'))
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['email'], self.email)
+        self.assertEqual(response.data['first_name'], 'João')
+        self.assertTrue(response.data['has_client_profile'])
+
+    def test_patch_me_success(self):
+        """Testa PATCH /auth/me/ com sucesso."""
+        response = self.client.patch(
+            reverse('auth-me'),
+            {'first_name': 'José', 'phone': '11999998888'},
+            format='json'
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['first_name'], 'José')
+        
+        # Verifica que foi salvo no banco
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'José')
+        self.assertEqual(self.user.phone, '11999998888')
+
+    def test_me_unauthenticated(self):
+        """Testa acesso sem autenticação."""
+        self.client.credentials()  # Remove credenciais
+        response = self.client.get(reverse('auth-me'))
+        
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PasswordResetViewTestCase(APITestCase):
+    """Testes para os endpoints de reset de senha."""
+
+    def setUp(self):
+        """Cria usuário de teste."""
+        self.email = f'reset_{uuid.uuid4().hex[:8]}@example.com'
+        self.user = User.objects.create_user(
+            email=self.email,
+            first_name='João',
+            last_name='Silva',
+            password='senha@segura123',
+        )
+
+    def test_password_reset_request_existing_email(self):
+        """Testa solicitação de reset para email existente."""
+        response = self.client.post(
+            reverse('auth-password-reset'),
+            {'email': self.email},
+            format='json'
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('message', response.data)
+
+    def test_password_reset_request_nonexistent_email(self):
+        """Testa solicitação de reset para email inexistente (deve retornar sucesso por segurança)."""
+        response = self.client.post(
+            reverse('auth-password-reset'),
+            {'email': 'nonexistent@example.com'},
+            format='json'
+        )
+        
+        # Sempre retorna sucesso por segurança
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_password_reset_confirm_success(self):
+        """Testa confirmação de reset de senha com sucesso."""
+        from django.utils.encoding import force_bytes
+        from django.utils.http import urlsafe_base64_encode
+        from django.contrib.auth.tokens import default_token_generator
+        
+        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+        token = default_token_generator.make_token(self.user)
+        
+        response = self.client.post(
+            reverse('auth-password-reset-confirm'),
+            {
+                'uid': uid,
+                'token': token,
+                'new_password': 'novasenha@segura123',
+                'new_password_confirm': 'novasenha@segura123',
+            },
+            format='json'
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Verifica que a senha foi alterada
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password('novasenha@segura123'))
+
+    def test_password_reset_confirm_invalid_token(self):
+        """Testa confirmação com token inválido."""
+        from django.utils.encoding import force_bytes
+        from django.utils.http import urlsafe_base64_encode
+        
+        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+        
+        response = self.client.post(
+            reverse('auth-password-reset-confirm'),
+            {
+                'uid': uid,
+                'token': 'invalid-token',
+                'new_password': 'novasenha@segura123',
+                'new_password_confirm': 'novasenha@segura123',
+            },
+            format='json'
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_password_reset_confirm_password_mismatch(self):
+        """Testa confirmação com senhas diferentes."""
+        from django.utils.encoding import force_bytes
+        from django.utils.http import urlsafe_base64_encode
+        from django.contrib.auth.tokens import default_token_generator
+        
+        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+        token = default_token_generator.make_token(self.user)
+        
+        response = self.client.post(
+            reverse('auth-password-reset-confirm'),
+            {
+                'uid': uid,
+                'token': token,
+                'new_password': 'novasenha@segura123',
+                'new_password_confirm': 'outrasenha@123',
+            },
+            format='json'
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

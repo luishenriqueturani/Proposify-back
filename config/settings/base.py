@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     # Third party apps
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',  # JWT token blacklist
     'corsheaders',
     'drf_spectacular',
     'channels',
@@ -265,6 +266,7 @@ SPECTACULAR_SETTINGS = {
         {'url': 'http://localhost:8000', 'description': 'Servidor de desenvolvimento'},
     ],
     'TAGS': [
+        {'name': 'Autenticação', 'description': 'Endpoints de autenticação (registro, login, logout, reset senha)'},
         {'name': 'Admin - Dashboard', 'description': 'Estatísticas e métricas do sistema'},
         {'name': 'Admin - Usuários', 'description': 'Gerenciamento de usuários (CRUD, suspender, ativar)'},
         {'name': 'Admin - Pedidos', 'description': 'Visualização de pedidos'},

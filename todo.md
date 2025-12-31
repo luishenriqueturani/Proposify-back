@@ -216,21 +216,21 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 ## 🔐 FASE 4: Autenticação e Permissões
 
 ### 4.1. Sistema JWT
-- ⬜ Instalar e configurar `djangorestframework-simplejwt` ou `djoser`
-- ⬜ Configurar access token (15-30 minutos)
-- ⬜ Configurar refresh token (7 dias)
-- ⬜ Configurar blacklist de tokens (Redis)
-- ⬜ Implementar rotação de refresh tokens
+- ✅ Instalar e configurar `djangorestframework-simplejwt` ou `djoser`
+- ✅ Configurar access token (15-30 minutos)
+- ✅ Configurar refresh token (7 dias)
+- ✅ Configurar blacklist de tokens (banco de dados)
+- ✅ Implementar rotação de refresh tokens
 
 ### 4.2. Endpoints de Autenticação
-- ⬜ POST `/auth/register` - Registro de usuário
-- ⬜ POST `/auth/login` - Login
-- ⬜ POST `/auth/refresh` - Renovar token
-- ⬜ POST `/auth/logout` - Logout (blacklist token)
-- ⬜ GET `/auth/me` - Dados do usuário logado
-- ⬜ PATCH `/auth/me` - Atualizar dados do usuário
-- ⬜ POST `/auth/password/reset` - Solicitar reset de senha
-- ⬜ POST `/auth/password/reset/confirm` - Confirmar reset de senha
+- ✅ POST `/auth/register` - Registro de usuário
+- ✅ POST `/auth/login` - Login
+- ✅ POST `/auth/refresh` - Renovar token
+- ✅ POST `/auth/logout` - Logout (blacklist token)
+- ✅ GET `/auth/me` - Dados do usuário logado
+- ✅ PATCH `/auth/me` - Atualizar dados do usuário
+- ✅ POST `/auth/password/reset` - Solicitar reset de senha
+- ✅ POST `/auth/password/reset/confirm` - Confirmar reset de senha
 
 ### 4.3. Permissões Customizadas
 - ⬜ Criar `IsClient` permission
@@ -245,24 +245,24 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ⬜ Criar `CanCreateProposal` permission (verifica limites)
 
 ### 4.4. Validação de Senhas
-- ⬜ Implementar validação de força de senha (mínimo 8 caracteres, letras, números, caracteres especiais)
-- ⬜ Configurar bcrypt explicitamente no settings
+- ✅ Implementar validação de força de senha (mínimo 8 caracteres, letras, números, caracteres especiais)
+- ✅ Configurar bcrypt explicitamente no settings
 - ⬜ Testar hash de senhas
 
 ### 4.5. Testes da Fase 4
 - ⬜ Testes unitários: Sistema JWT (geração, validação, refresh)
 - ⬜ Testes unitários: Permissões customizadas (IsClient, IsProvider, IsAdmin, etc.)
-- ⬜ Testes unitários: Validação de força de senha
+- ✅ Testes unitários: Validação de força de senha
 - ⬜ Testes unitários: Hash de senhas com bcrypt
-- ⬜ Testes de integração: Endpoints de autenticação (register, login, refresh, logout)
-- ⬜ Testes de integração: Endpoint /auth/me
-- ⬜ Testes de integração: Reset de senha
-- ⬜ Testes de integração: Blacklist de tokens
+- ✅ Testes de integração: Endpoints de autenticação (register, login, refresh, logout)
+- ✅ Testes de integração: Endpoint /auth/me
+- ✅ Testes de integração: Reset de senha
+- ✅ Testes de integração: Blacklist de tokens
 - ⬜ Testes E2E: Fluxo completo de registro → login → refresh → logout
 
 ### 4.6. Documentação da Fase 4
-- ⬜ Documentar endpoints de autenticação no Swagger
-- ⬜ Adicionar exemplos de requisições/respostas de autenticação
+- ✅ Documentar endpoints de autenticação no Swagger
+- ✅ Adicionar exemplos de requisições/respostas de autenticação
 - ⬜ Documentar sistema de permissões
 - ⬜ Documentar validação de senhas
 - ⬜ Documentar uso de JWT no Swagger (autenticação)
@@ -272,8 +272,8 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 ## 👥 FASE 5: App Accounts
 
 ### 5.1. Serializers
-- ⬜ Criar `UserSerializer`
-- ⬜ Criar `UserRegistrationSerializer`
+- ✅ Criar `UserSerializer`
+- ✅ Criar `UserRegistrationSerializer`
 - ⬜ Criar `ProviderProfileSerializer`
 - ⬜ Criar `ClientProfileSerializer`
 - ⬜ Criar `UserProfileSerializer` (combinado)
@@ -282,14 +282,14 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ⬜ Criar `UserViewSet` (CRUD básico)
 - ⬜ Criar `ProviderProfileViewSet`
 - ⬜ Criar `ClientProfileViewSet`
-- ⬜ Implementar validações nos serializers
+- ✅ Implementar validações nos serializers
 
 ### 5.3. URLs
-- ⬜ Configurar URLs do app accounts
-- ⬜ Integrar com URLs principais
+- ✅ Configurar URLs do app accounts (autenticação)
+- ✅ Integrar com URLs principais
 
 ### 5.4. Testes da Fase 5
-- ⬜ Testes unitários: Serializers (validação, transformação)
+- ✅ Testes unitários: Serializers de autenticação (validação, transformação)
 - ⬜ Testes de integração: UserViewSet (CRUD)
 - ⬜ Testes de integração: ProviderProfileViewSet
 - ⬜ Testes de integração: ClientProfileViewSet

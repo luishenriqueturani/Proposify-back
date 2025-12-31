@@ -24,8 +24,8 @@ urlpatterns = [
     # Health Checks
     path('', include('api.utils.urls')),
     
-    # API Routes (serão adicionadas conforme os apps forem implementados)
-    # path('api/auth/', include('api.accounts.urls')),
+    # API Routes
+    path('api/auth/', include('api.accounts.urls')),
     # path('api/services/', include('api.services.urls')),
     # path('api/orders/', include('api.orders.urls')),
     # path('api/proposals/', include('api.orders.urls')),  # propostas ficam em orders
