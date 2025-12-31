@@ -33,6 +33,6 @@ urlpatterns = [
     # path('api/subscriptions/', include('api.subscriptions.urls')),
     # path('api/payments/', include('api.payments.urls')),
     # path('api/reviews/', include('api.reviews.urls')),
-    # path('api/admin/', include('api.admin.urls')),
+    path('api/admin/', include('api.admin.urls')),
 ]
 

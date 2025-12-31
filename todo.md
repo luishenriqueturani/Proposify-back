@@ -174,26 +174,26 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Implementar lógica de suspender/ativar usuários
 
 ### 3.3. Endpoints
-- ⬜ GET `/admin/dashboard/stats/` - Estatísticas do dashboard
-- ⬜ GET `/admin/users/` - Listar usuários
-- ⬜ GET `/admin/users/{id}/` - Detalhes do usuário
-- ⬜ PATCH `/admin/users/{id}/` - Atualizar usuário
-- ⬜ POST `/admin/users/{id}/suspend/` - Suspender usuário
-- ⬜ POST `/admin/users/{id}/activate/` - Ativar usuário
-- ⬜ GET `/admin/orders/` - Listar pedidos (admin)
-- ⬜ GET `/admin/proposals/` - Listar propostas (admin)
-- ⬜ GET `/admin/payments/` - Listar pagamentos (admin)
-- ⬜ GET `/admin/subscriptions/` - Listar assinaturas (admin)
-- ⬜ GET `/admin/reviews/` - Listar reviews (admin)
-- ⬜ GET `/admin/audit-logs/` - Logs de auditoria
+- ✅ GET `/admin/dashboard/stats/` - Estatísticas do dashboard
+- ✅ GET `/admin/users/` - Listar usuários
+- ✅ GET `/admin/users/{id}/` - Detalhes do usuário
+- ✅ PATCH `/admin/users/{id}/` - Atualizar usuário
+- ✅ POST `/admin/users/{id}/suspend/` - Suspender usuário
+- ✅ POST `/admin/users/{id}/activate/` - Ativar usuário
+- ✅ GET `/admin/orders/` - Listar pedidos (admin)
+- ✅ GET `/admin/proposals/` - Listar propostas (admin)
+- ✅ GET `/admin/payments/` - Listar pagamentos (admin)
+- ✅ GET `/admin/subscriptions/` - Listar assinaturas (admin)
+- ✅ GET `/admin/reviews/` - Listar reviews (admin)
+- ✅ GET `/admin/audit-logs/` - Logs de auditoria
 
 ### 3.4. Auditoria
 - ⬜ Criar middleware para registrar ações administrativas
 - ⬜ Implementar logging de ações (AdminAction)
 
 ### 3.5. URLs
-- ⬜ Configurar URLs do app admin
-- ⬜ Integrar com URLs principais
+- ✅ Configurar URLs do app admin
+- ✅ Integrar com URLs principais
 
 ### 3.6. Testes da Fase 3
 - ⬜ Testes unitários: Serializers de dashboard/stats
