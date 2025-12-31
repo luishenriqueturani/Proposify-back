@@ -264,6 +264,16 @@ SPECTACULAR_SETTINGS = {
     'SERVERS': [
         {'url': 'http://localhost:8000', 'description': 'Servidor de desenvolvimento'},
     ],
+    'TAGS': [
+        {'name': 'Admin - Dashboard', 'description': 'Estatísticas e métricas do sistema'},
+        {'name': 'Admin - Usuários', 'description': 'Gerenciamento de usuários (CRUD, suspender, ativar)'},
+        {'name': 'Admin - Pedidos', 'description': 'Visualização de pedidos'},
+        {'name': 'Admin - Propostas', 'description': 'Visualização de propostas'},
+        {'name': 'Admin - Pagamentos', 'description': 'Visualização de pagamentos'},
+        {'name': 'Admin - Assinaturas', 'description': 'Gerenciamento de assinaturas'},
+        {'name': 'Admin - Avaliações', 'description': 'Moderação de avaliações'},
+        {'name': 'Admin - Auditoria', 'description': 'Logs de ações administrativas'},
+    ],
 }
 
 # Email Configuration (django-anymail)

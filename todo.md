@@ -205,11 +205,11 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Testes E2E: Admin acessa dashboard → gerencia usuários → verifica logs de auditoria
 
 ### 3.7. Documentação da Fase 3
-- ⬜ Documentar endpoints do app admin no Swagger
-- ⬜ Adicionar exemplos de requisições/respostas
-- ⬜ Documentar permissões administrativas
-- ⬜ Documentar sistema de auditoria
-- ⬜ Adicionar tags "Admin" no Swagger
+- ✅ Documentar endpoints do app admin no Swagger
+- ✅ Adicionar exemplos de requisições/respostas
+- ✅ Documentar permissões administrativas
+- ✅ Documentar sistema de auditoria
+- ✅ Adicionar tags "Admin" no Swagger
 
 ---
 
