@@ -188,8 +188,8 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ GET `/admin/audit-logs/` - Logs de auditoria
 
 ### 3.4. Auditoria
-- ⬜ Criar middleware para registrar ações administrativas
-- ⬜ Implementar logging de ações (AdminAction)
+- ✅ Criar middleware para registrar ações administrativas
+- ✅ Implementar logging de ações (AdminAction)
 
 ### 3.5. URLs
 - ✅ Configurar URLs do app admin
