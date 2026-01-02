@@ -233,13 +233,15 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ POST `/auth/password/reset/confirm` - Confirmar reset de senha
 
 ### 4.3. Permissões Customizadas
-- ⬜ Criar `IsClient` permission
-- ⬜ Criar `IsProvider` permission
-- ⬜ Criar `IsAdmin` permission
-- ⬜ Criar `IsProposalOwner` permission
-- ⬜ Criar `IsOrderOwner` permission
-- ⬜ Criar `IsChatRoomParticipant` permission
-- ⬜ Criar `IsSubscriptionOwner` permission
+- ✅ Criar `IsClient` permission
+- ✅ Criar `IsProvider` permission
+- ✅ Criar `IsAdmin` permission (centralizado em accounts, re-exportado em admin)
+- ✅ Criar `IsClientOrProvider` permission (bônus)
+- ✅ Criar `IsOwnerOrAdmin` permission (bônus - verifica dono ou admin)
+- ⬜ Criar `IsProposalOwner` permission (quando implementar proposals)
+- ⬜ Criar `IsOrderOwner` permission (quando implementar orders)
+- ⬜ Criar `IsChatRoomParticipant` permission (quando implementar chat)
+- ⬜ Criar `IsSubscriptionOwner` permission (quando implementar subscriptions)
 - ⬜ Criar `HasActiveSubscription` permission
 - ⬜ Criar `CanCreateOrder` permission (verifica limites)
 - ⬜ Criar `CanCreateProposal` permission (verifica limites)
