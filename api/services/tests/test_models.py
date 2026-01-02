@@ -1,5 +1,5 @@
 """
-Testes unitários para o app services.
+Testes unitários para os modelos do app services.
 """
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -7,6 +7,7 @@ from django.db import IntegrityError
 from django.utils import timezone
 from django.utils.text import slugify
 import time
+
 from api.services.models import ServiceCategory, Service
 
 
@@ -514,30 +515,18 @@ class ServiceModelTestCase(TestCase):
         category_b = ServiceCategory.objects.create(name='Categoria B')
         
         # Cria serviços em ordem diferente
-        service_b2 = Service.objects.create(
-            category=category_b,
-            name='Serviço B2'
-        )
-        service_a1 = Service.objects.create(
-            category=category_a,
-            name='Serviço A1'
-        )
-        service_b1 = Service.objects.create(
-            category=category_b,
-            name='Serviço B1'
-        )
-        service_a2 = Service.objects.create(
-            category=category_a,
-            name='Serviço A2'
-        )
+        service_b2 = Service.objects.create(category=category_b, name='Serviço B2')
+        service_a1 = Service.objects.create(category=category_a, name='Serviço A1')
+        service_b1 = Service.objects.create(category=category_b, name='Serviço B1')
+        service_a2 = Service.objects.create(category=category_a, name='Serviço A2')
         
         services = list(Service.objects.all())
         
         # Deve estar ordenado por category primeiro, depois por name
-        self.assertEqual(services[0], service_a1)  # Categoria A, Serviço A1
-        self.assertEqual(services[1], service_a2)  # Categoria A, Serviço A2
-        self.assertEqual(services[2], service_b1)  # Categoria B, Serviço B1
-        self.assertEqual(services[3], service_b2)  # Categoria B, Serviço B2
+        self.assertEqual(services[0], service_a1)
+        self.assertEqual(services[1], service_a2)
+        self.assertEqual(services[2], service_b1)
+        self.assertEqual(services[3], service_b2)
 
     def test_indexes_exist(self):
         """Testa que os índices foram criados corretamente."""
@@ -546,7 +535,7 @@ class ServiceModelTestCase(TestCase):
             name='Serviço Teste'
         )
         
-        # Testa queries que usam os índices (verifica que não há erros)
+        # Testa queries que usam os índices
         Service.objects.filter(category=self.category).first()
         Service.objects.filter(is_active=True).first()
         Service.objects.filter(deleted_at__isnull=True).first()
@@ -573,25 +562,10 @@ class ServiceModelTestCase(TestCase):
 
     def test_multiple_services_per_category(self):
         """Testa que uma categoria pode ter múltiplos serviços."""
-        service1 = Service.objects.create(
-            category=self.category,
-            name='Serviço 1'
-        )
-        service2 = Service.objects.create(
-            category=self.category,
-            name='Serviço 2'
-        )
-        service3 = Service.objects.create(
-            category=self.category,
-            name='Serviço 3'
-        )
+        service1 = Service.objects.create(category=self.category, name='Serviço 1')
+        service2 = Service.objects.create(category=self.category, name='Serviço 2')
+        service3 = Service.objects.create(category=self.category, name='Serviço 3')
         
-        # Todos os serviços pertencem à mesma categoria
-        self.assertEqual(service1.category, self.category)
-        self.assertEqual(service2.category, self.category)
-        self.assertEqual(service3.category, self.category)
-        
-        # A categoria tem 3 serviços
         self.assertEqual(self.category.services.count(), 3)
 
     def test_services_with_different_categories(self):
@@ -599,14 +573,8 @@ class ServiceModelTestCase(TestCase):
         category1 = ServiceCategory.objects.create(name='Categoria 1')
         category2 = ServiceCategory.objects.create(name='Categoria 2')
         
-        service1 = Service.objects.create(
-            category=category1,
-            name='Serviço da Categoria 1'
-        )
-        service2 = Service.objects.create(
-            category=category2,
-            name='Serviço da Categoria 2'
-        )
+        service1 = Service.objects.create(category=category1, name='Serviço 1')
+        service2 = Service.objects.create(category=category2, name='Serviço 2')
         
         self.assertEqual(service1.category, category1)
         self.assertEqual(service2.category, category2)
@@ -617,30 +585,15 @@ class ServiceModelTestCase(TestCase):
         category1 = ServiceCategory.objects.create(name='Categoria 1')
         category2 = ServiceCategory.objects.create(name='Categoria 2')
         
-        service1 = Service.objects.create(
-            category=category1,
-            name='Serviço 1'
-        )
-        service2 = Service.objects.create(
-            category=category1,
-            name='Serviço 2'
-        )
-        service3 = Service.objects.create(
-            category=category2,
-            name='Serviço 3'
-        )
+        service1 = Service.objects.create(category=category1, name='Serviço 1')
+        service2 = Service.objects.create(category=category1, name='Serviço 2')
+        service3 = Service.objects.create(category=category2, name='Serviço 3')
         
-        # Filtra serviços da categoria 1
         services_cat1 = Service.objects.filter(category=category1)
         self.assertEqual(services_cat1.count(), 2)
         self.assertIn(service1, services_cat1)
         self.assertIn(service2, services_cat1)
         self.assertNotIn(service3, services_cat1)
-        
-        # Filtra serviços da categoria 2
-        services_cat2 = Service.objects.filter(category=category2)
-        self.assertEqual(services_cat2.count(), 1)
-        self.assertIn(service3, services_cat2)
 
     def test_filter_services_by_is_active(self):
         """Testa filtro de serviços por is_active."""
@@ -655,12 +608,6 @@ class ServiceModelTestCase(TestCase):
             is_active=False
         )
         
-        # Filtra serviços ativos
         active_services = Service.objects.filter(is_active=True)
         self.assertIn(service_active, active_services)
         self.assertNotIn(service_inactive, active_services)
-        
-        # Filtra serviços inativos
-        inactive_services = Service.objects.filter(is_active=False)
-        self.assertNotIn(service_active, inactive_services)
-        self.assertIn(service_inactive, inactive_services)

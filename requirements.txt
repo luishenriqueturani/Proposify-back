@@ -45,3 +45,4 @@ Pillow>=10.2.0
 # Logging
 python-json-logger>=2.0.7
 
+django-filter==25.2

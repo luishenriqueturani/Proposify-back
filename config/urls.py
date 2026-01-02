@@ -26,7 +26,7 @@ urlpatterns = [
     
     # API Routes
     path('api/auth/', include('api.accounts.urls')),
-    # path('api/services/', include('api.services.urls')),
+    path('api/services/', include('api.services.urls')),
     # path('api/orders/', include('api.orders.urls')),
     # path('api/proposals/', include('api.orders.urls')),  # propostas ficam em orders
     # path('api/chat/', include('api.chat.urls')),

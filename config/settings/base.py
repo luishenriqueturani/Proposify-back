@@ -266,7 +266,16 @@ SPECTACULAR_SETTINGS = {
         {'url': 'http://localhost:8000', 'description': 'Servidor de desenvolvimento'},
     ],
     'TAGS': [
-        {'name': 'Autenticação', 'description': 'Endpoints de autenticação (registro, login, logout, reset senha)'},
+        # Autenticação
+        {'name': 'Autenticação', 'description': 'Registro, login, logout, refresh token e reset de senha'},
+        # Accounts - Usuários e Perfis
+        {'name': 'Usuários', 'description': 'CRUD de usuários. Listagem restrita a admins.'},
+        {'name': 'Perfis - Prestador', 'description': 'Gerenciamento de perfis de prestadores de serviços'},
+        {'name': 'Perfis - Cliente', 'description': 'Gerenciamento de perfis de clientes. Listagem restrita a admins.'},
+        # Services - Categorias e Serviços
+        {'name': 'Serviços - Categorias', 'description': 'Gerenciamento de categorias de serviços com estrutura hierárquica. CRUD restrito a admins. Filtros: is_active, parent, search. Endpoints especiais: /tree (árvore), /root (raiz), /{id}/services (serviços da categoria).'},
+        {'name': 'Serviços', 'description': 'Catálogo de serviços disponíveis na plataforma. CRUD restrito a admins. Filtros: category, is_active, search.'},
+        # Admin
         {'name': 'Admin - Dashboard', 'description': 'Estatísticas e métricas do sistema'},
         {'name': 'Admin - Usuários', 'description': 'Gerenciamento de usuários (CRUD, suspender, ativar)'},
         {'name': 'Admin - Pedidos', 'description': 'Visualização de pedidos'},

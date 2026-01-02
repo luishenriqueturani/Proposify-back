@@ -283,73 +283,83 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ Criar `UserProfileUpdateSerializer` (bônus - atualização combinada)
 
 ### 5.2. ViewSets
-- ⬜ Criar `UserViewSet` (CRUD básico)
-- ⬜ Criar `ProviderProfileViewSet`
-- ⬜ Criar `ClientProfileViewSet`
+- ✅ Criar `UserViewSet` (CRUD básico)
+- ✅ Criar `ProviderProfileViewSet`
+- ✅ Criar `ClientProfileViewSet`
 - ✅ Implementar validações nos serializers
 
 ### 5.3. URLs
 - ✅ Configurar URLs do app accounts (autenticação)
 - ✅ Integrar com URLs principais
+- ✅ Registrar ViewSets no router
 
 ### 5.4. Testes da Fase 5
 - ✅ Testes unitários: Serializers de autenticação (validação, transformação)
-- ⬜ Testes de integração: UserViewSet (CRUD)
-- ⬜ Testes de integração: ProviderProfileViewSet
-- ⬜ Testes de integração: ClientProfileViewSet
-- ⬜ Testes de integração: Permissões (IsClient, IsProvider)
-- ⬜ Testes E2E: Criar perfil de cliente e prestador
+- ✅ Testes de integração: UserViewSet (CRUD)
+- ✅ Testes de integração: ProviderProfileViewSet
+- ✅ Testes de integração: ClientProfileViewSet
+- ✅ Testes de integração: Permissões (IsClient, IsProvider) via endpoints
+- ✅ Testes E2E: Criar perfil de cliente e prestador
 
 ### 5.5. Documentação da Fase 5
-- ⬜ Documentar endpoints do app accounts no Swagger
-- ⬜ Adicionar exemplos de requisições/respostas
-- ⬜ Documentar serializers (campos, validações)
-- ⬜ Adicionar tags "Accounts" no Swagger
+- ✅ Documentar endpoints do app accounts no Swagger
+- ✅ Adicionar exemplos de requisições/respostas
+- ✅ Documentar serializers (campos, validações)
+- ✅ Adicionar tags "Accounts" no Swagger (Usuários, Perfis - Prestador, Perfis - Cliente)
 
 ---
 
 ## 🛍️ FASE 6: App Services
 
-### 5.1. Serializers
-- ⬜ Criar `ServiceCategorySerializer`
-- ⬜ Criar `ServiceSerializer`
-- ⬜ Implementar validações
+### 6.1. Serializers
+- ✅ Criar `ServiceCategorySerializer` (completo com full_path, children_count, services_count)
+- ✅ Criar `ServiceCategoryListSerializer` (simplificado para listagens)
+- ✅ Criar `ServiceCategoryTreeSerializer` (árvore com filhos aninhados)
+- ✅ Criar `ServiceCategoryCreateUpdateSerializer`
+- ✅ Criar `ServiceSerializer` (completo com category_name, category_full_path)
+- ✅ Criar `ServiceListSerializer` (simplificado para listagens)
+- ✅ Criar `ServiceCreateUpdateSerializer`
+- ✅ Implementar validações (nome, categoria ativa, ciclos em hierarquia)
 
-### 5.2. ViewSets
-- ⬜ Criar `ServiceCategoryViewSet` (CRUD - admin only para criar/editar/deletar)
-- ⬜ Criar `ServiceViewSet` (CRUD - admin only para criar/editar/deletar)
-- ⬜ Implementar filtros (categoria, ativo, etc.)
+### 6.2. ViewSets
+- ✅ Criar `ServiceCategoryViewSet` (CRUD - admin only para criar/editar/deletar)
+- ✅ Criar `ServiceViewSet` (CRUD - admin only para criar/editar/deletar)
+- ✅ Implementar filtros (categoria, ativo, busca por nome/descrição)
+- ✅ Actions extras: `tree/` (árvore), `root/` (categorias raiz)
 
 ### 6.3. Endpoints
-- ⬜ GET `/categories/` - Listar categorias
-- ⬜ GET `/categories/{id}/` - Detalhes da categoria
-- ⬜ POST `/categories/` - Criar categoria (admin only)
-- ⬜ PATCH `/categories/{id}/` - Atualizar categoria (admin only)
-- ⬜ DELETE `/categories/{id}/` - Deletar categoria (admin only)
-- ⬜ GET `/categories/{id}/services/` - Serviços de uma categoria
-- ⬜ GET `/services/` - Listar serviços
-- ⬜ GET `/services/{id}/` - Detalhes do serviço
-- ⬜ POST `/services/` - Criar serviço (admin only)
-- ⬜ PATCH `/services/{id}/` - Atualizar serviço (admin only)
-- ⬜ DELETE `/services/{id}/` - Deletar serviço (admin only)
+- ✅ GET `/services/categories/` - Listar categorias
+- ✅ GET `/services/categories/{id}/` - Detalhes da categoria
+- ✅ POST `/services/categories/` - Criar categoria (admin only)
+- ✅ PATCH `/services/categories/{id}/` - Atualizar categoria (admin only)
+- ✅ DELETE `/services/categories/{id}/` - Deletar categoria (admin only)
+- ✅ GET `/services/categories/tree/` - Árvore de categorias
+- ✅ GET `/services/categories/root/` - Categorias raiz
+- ✅ GET `/services/` - Listar serviços
+- ✅ GET `/services/{id}/` - Detalhes do serviço
+- ✅ POST `/services/` - Criar serviço (admin only)
+- ✅ PATCH `/services/{id}/` - Atualizar serviço (admin only)
+- ✅ DELETE `/services/{id}/` - Deletar serviço (admin only)
 
 ### 6.4. URLs
-- ⬜ Configurar URLs do app services
-- ⬜ Integrar com URLs principais
+- ✅ Configurar URLs do app services
+- ✅ Integrar com URLs principais (`/api/services/`)
 
 ### 6.5. Testes da Fase 6
-- ⬜ Testes unitários: Serializers (validações)
-- ⬜ Testes de integração: ServiceCategoryViewSet (CRUD, filtros)
-- ⬜ Testes de integração: ServiceViewSet (CRUD, filtros)
-- ⬜ Testes de integração: Permissões (admin only para criar/editar/deletar)
-- ⬜ Testes de integração: Endpoint /categories/{id}/services/
-- ⬜ Testes E2E: Criar categoria → criar serviço → listar serviços da categoria
+- ✅ Testes unitários: Serializers (validações de nome, categoria, ciclos)
+- ✅ Testes de integração: ServiceCategoryViewSet (CRUD, filtros, tree, root)
+- ✅ Testes de integração: ServiceViewSet (CRUD, filtros)
+- ✅ Testes de integração: Permissões (admin only para criar/editar/deletar)
+- ✅ Testes de integração: Endpoint `/categories/{id}/services/`
+- ✅ Testes E2E: Criar categoria → criar serviços → listar serviços da categoria
+- ✅ Testes E2E: Hierarquia de categorias (raiz → subcategoria → árvore)
+- ✅ Testes E2E: Verificação de permissões negadas para cliente
 
 ### 6.6. Documentação da Fase 6
-- ⬜ Documentar endpoints do app services no Swagger
-- ⬜ Adicionar exemplos de requisições/respostas
-- ⬜ Documentar filtros disponíveis
-- ⬜ Adicionar tags "Services" no Swagger
+- ✅ Documentar endpoints do app services no Swagger
+- ✅ Adicionar exemplos de requisições/respostas
+- ✅ Documentar filtros disponíveis
+- ✅ Adicionar tags "Services" no Swagger
 
 ---
 

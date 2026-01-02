@@ -121,7 +121,11 @@ class IsOwnerOrAdmin(permissions.BasePermission):
     """
     Permissão que verifica se o usuário é o dono do objeto ou um admin.
     
-    Requer que o objeto tenha um campo 'user' ou método 'get_owner()'.
+    Funciona com:
+    - Objetos User (verifica se obj == request.user)
+    - Objetos com campo 'user' (ex: Profile)
+    - Objetos com campo 'client' ou 'provider'
+    - Objetos com método 'get_owner()'
     """
     message = 'Você não tem permissão para acessar este recurso.'
 
@@ -145,7 +149,11 @@ class IsOwnerOrAdmin(permissions.BasePermission):
                 request.user.is_staff or request.user.is_superuser):  # type: ignore
             return True
 
-        # Verifica se é o dono
+        # Se o objeto é o próprio usuário (para UserViewSet)
+        if obj == request.user:
+            return True
+
+        # Verifica se é o dono via campo 'user'
         if hasattr(obj, 'user'):
             return obj.user == request.user
         elif hasattr(obj, 'get_owner'):
