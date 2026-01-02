@@ -276,6 +276,18 @@ SPECTACULAR_SETTINGS = {
         {'name': 'Admin - Avaliações', 'description': 'Moderação de avaliações'},
         {'name': 'Admin - Auditoria', 'description': 'Logs de ações administrativas'},
     ],
+    # Configuração de segurança JWT para Swagger
+    'SECURITY': [{'bearerAuth': []}],
+    'APPEND_COMPONENTS': {
+        'securitySchemes': {
+            'bearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+                'description': 'Token JWT obtido via POST /api/auth/login/',
+            }
+        }
+    },
 }
 
 # Email Configuration (django-anymail)

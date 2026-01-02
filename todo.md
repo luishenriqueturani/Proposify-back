@@ -264,9 +264,9 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 ### 4.6. Documentação da Fase 4
 - ✅ Documentar endpoints de autenticação no Swagger
 - ✅ Adicionar exemplos de requisições/respostas de autenticação
-- ⬜ Documentar sistema de permissões
-- ⬜ Documentar validação de senhas
-- ⬜ Documentar uso de JWT no Swagger (autenticação)
+- ✅ Documentar sistema de permissões (docs/permissoes.md)
+- ✅ Documentar validação de senhas (docs/validacao_senhas.md)
+- ✅ Documentar uso de JWT no Swagger (docs/autenticacao_jwt.md)
 
 ---
 
