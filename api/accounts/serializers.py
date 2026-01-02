@@ -252,3 +252,247 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         self.user.set_password(self.validated_data['new_password'])
         self.user.save(update_fields=['password'])
         return self.user
+
+
+# =============================================================================
+# Serializers de Perfil
+# =============================================================================
+
+
+class ProviderProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer para perfil de prestador de serviços.
+    
+    Campos read-only (calculados pelo sistema):
+    - rating_avg, total_reviews, total_orders_completed
+    
+    Campos editáveis:
+    - bio
+    
+    Campos admin-only:
+    - is_verified
+    """
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProviderProfile
+        fields = [
+            'id', 'user_email', 'user_name', 'bio',
+            'rating_avg', 'total_reviews', 'total_orders_completed',
+            'is_verified', 'created_at', 'updated_at'
+        ]
+        read_only_fields = [
+            'id', 'user_email', 'user_name',
+            'rating_avg', 'total_reviews', 'total_orders_completed',
+            'is_verified', 'created_at', 'updated_at'
+        ]
+
+    def get_user_name(self, obj):
+        """Retorna o nome completo do usuário."""
+        return obj.user.get_full_name()
+
+
+class ProviderProfileUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer para atualização de perfil de prestador.
+    """
+    class Meta:
+        model = ProviderProfile
+        fields = ['bio']
+
+
+class ClientProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer para perfil de cliente.
+    
+    Campos editáveis:
+    - address, city, state, zip_code
+    """
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_name = serializers.SerializerMethodField()
+    full_address = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ClientProfile
+        fields = [
+            'id', 'user_email', 'user_name',
+            'address', 'city', 'state', 'zip_code', 'full_address',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'user_email', 'user_name', 'full_address', 'created_at', 'updated_at']
+
+    def get_user_name(self, obj):
+        """Retorna o nome completo do usuário."""
+        return obj.user.get_full_name()
+
+    def get_full_address(self, obj):
+        """Retorna o endereço completo formatado."""
+        parts = []
+        if obj.address:
+            parts.append(obj.address)
+        if obj.city:
+            parts.append(obj.city)
+        if obj.state:
+            parts.append(obj.state)
+        if obj.zip_code:
+            parts.append(f"CEP: {obj.zip_code}")
+        return ' - '.join(parts) if parts else None
+
+
+class ClientProfileUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer para atualização de perfil de cliente.
+    """
+    class Meta:
+        model = ClientProfile
+        fields = ['address', 'city', 'state', 'zip_code']
+
+    def validate_state(self, value):
+        """Valida que o estado tem exatamente 2 caracteres (UF)."""
+        if value and len(value) != 2:
+            raise serializers.ValidationError(
+                'O estado deve ter exatamente 2 caracteres (UF).'
+            )
+        return value.upper() if value else value
+
+    def validate_zip_code(self, value):
+        """Valida e formata o CEP."""
+        if value:
+            # Remove caracteres não numéricos
+            digits = ''.join(filter(str.isdigit, value))
+            if len(digits) != 8:
+                raise serializers.ValidationError(
+                    'O CEP deve ter 8 dígitos.'
+                )
+            # Formata como 00000-000
+            return f"{digits[:5]}-{digits[5:]}"
+        return value
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer combinado: dados do usuário + perfis (cliente e/ou prestador).
+    
+    Útil para endpoints que precisam retornar todos os dados do usuário
+    junto com seus perfis em uma única requisição.
+    """
+    full_name = serializers.SerializerMethodField()
+    client_profile = ClientProfileSerializer(read_only=True)
+    provider_profile = ProviderProfileSerializer(read_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 'email', 'first_name', 'last_name', 'full_name',
+            'phone', 'user_type', 'is_active',
+            'client_profile', 'provider_profile',
+            'date_joined', 'last_login', 'created_at', 'updated_at'
+        ]
+        read_only_fields = [
+            'id', 'email', 'is_active', 'date_joined', 'last_login',
+            'created_at', 'updated_at'
+        ]
+
+    def get_full_name(self, obj):
+        """Retorna o nome completo do usuário."""
+        return obj.get_full_name()
+
+
+class UserProfileUpdateSerializer(serializers.Serializer):
+    """
+    Serializer para atualização combinada de usuário + perfil.
+    
+    Permite atualizar dados do usuário e do perfil em uma única requisição.
+    """
+    # Dados do usuário
+    first_name = serializers.CharField(required=False, max_length=150)
+    last_name = serializers.CharField(required=False, max_length=150)
+    phone = serializers.CharField(required=False, max_length=20, allow_blank=True)
+    
+    # Dados do perfil de cliente
+    client_address = serializers.CharField(
+        required=False, max_length=255, allow_blank=True,
+        help_text='Endereço do cliente'
+    )
+    client_city = serializers.CharField(
+        required=False, max_length=100, allow_blank=True,
+        help_text='Cidade do cliente'
+    )
+    client_state = serializers.CharField(
+        required=False, max_length=2, allow_blank=True,
+        help_text='Estado (UF) do cliente'
+    )
+    client_zip_code = serializers.CharField(
+        required=False, max_length=10, allow_blank=True,
+        help_text='CEP do cliente'
+    )
+    
+    # Dados do perfil de prestador
+    provider_bio = serializers.CharField(
+        required=False, allow_blank=True,
+        help_text='Biografia do prestador'
+    )
+
+    def validate_phone(self, value):
+        """Remove caracteres não numéricos do telefone."""
+        if value:
+            return ''.join(filter(str.isdigit, value))
+        return value
+
+    def validate_client_state(self, value):
+        """Valida que o estado tem 2 caracteres."""
+        if value and len(value) != 2:
+            raise serializers.ValidationError(
+                'O estado deve ter exatamente 2 caracteres (UF).'
+            )
+        return value.upper() if value else value
+
+    def validate_client_zip_code(self, value):
+        """Valida e formata o CEP."""
+        if value:
+            digits = ''.join(filter(str.isdigit, value))
+            if len(digits) != 8:
+                raise serializers.ValidationError(
+                    'O CEP deve ter 8 dígitos.'
+                )
+            return f"{digits[:5]}-{digits[5:]}"
+        return value
+
+    def update(self, instance, validated_data):
+        """Atualiza usuário e perfis."""
+        # Atualiza dados do usuário
+        user_fields = ['first_name', 'last_name', 'phone']
+        user_updated = False
+        for field in user_fields:
+            if field in validated_data:
+                setattr(instance, field, validated_data[field])
+                user_updated = True
+        
+        if user_updated:
+            instance.save()
+        
+        # Atualiza perfil de cliente
+        client_fields = {
+            'client_address': 'address',
+            'client_city': 'city',
+            'client_state': 'state',
+            'client_zip_code': 'zip_code',
+        }
+        if hasattr(instance, 'client_profile') and instance.client_profile:
+            profile = instance.client_profile
+            profile_updated = False
+            for input_field, model_field in client_fields.items():
+                if input_field in validated_data:
+                    setattr(profile, model_field, validated_data[input_field])
+                    profile_updated = True
+            if profile_updated:
+                profile.save()
+        
+        # Atualiza perfil de prestador
+        if 'provider_bio' in validated_data:
+            if hasattr(instance, 'provider_profile') and instance.provider_profile:
+                instance.provider_profile.bio = validated_data['provider_bio']
+                instance.provider_profile.save()
+        
+        return instance

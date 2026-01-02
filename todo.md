@@ -275,9 +275,12 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 ### 5.1. Serializers
 - ✅ Criar `UserSerializer`
 - ✅ Criar `UserRegistrationSerializer`
-- ⬜ Criar `ProviderProfileSerializer`
-- ⬜ Criar `ClientProfileSerializer`
-- ⬜ Criar `UserProfileSerializer` (combinado)
+- ✅ Criar `ProviderProfileSerializer`
+- ✅ Criar `ClientProfileSerializer`
+- ✅ Criar `UserProfileSerializer` (combinado)
+- ✅ Criar `ProviderProfileUpdateSerializer` (bônus)
+- ✅ Criar `ClientProfileUpdateSerializer` (bônus)
+- ✅ Criar `UserProfileUpdateSerializer` (bônus - atualização combinada)
 
 ### 5.2. ViewSets
 - ⬜ Criar `UserViewSet` (CRUD básico)
