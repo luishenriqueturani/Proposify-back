@@ -248,18 +248,18 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 ### 4.4. Validação de Senhas
 - ✅ Implementar validação de força de senha (mínimo 8 caracteres, letras, números, caracteres especiais)
 - ✅ Configurar bcrypt explicitamente no settings
-- ⬜ Testar hash de senhas
+- ✅ Testar hash de senhas
 
 ### 4.5. Testes da Fase 4
-- ⬜ Testes unitários: Sistema JWT (geração, validação, refresh)
-- ⬜ Testes unitários: Permissões customizadas (IsClient, IsProvider, IsAdmin, etc.)
+- ✅ Testes unitários: Sistema JWT (geração, validação, refresh)
+- ✅ Testes unitários: Permissões customizadas (IsClient, IsProvider, IsAdmin, etc.)
 - ✅ Testes unitários: Validação de força de senha
-- ⬜ Testes unitários: Hash de senhas com bcrypt
+- ✅ Testes unitários: Hash de senhas com bcrypt
 - ✅ Testes de integração: Endpoints de autenticação (register, login, refresh, logout)
 - ✅ Testes de integração: Endpoint /auth/me
 - ✅ Testes de integração: Reset de senha
 - ✅ Testes de integração: Blacklist de tokens
-- ⬜ Testes E2E: Fluxo completo de registro → login → refresh → logout
+- ✅ Testes E2E: Fluxo completo de registro → login → refresh → logout
 
 ### 4.6. Documentação da Fase 4
 - ✅ Documentar endpoints de autenticação no Swagger
