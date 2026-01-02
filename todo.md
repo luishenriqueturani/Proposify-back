@@ -232,19 +232,18 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ✅ POST `/auth/password/reset` - Solicitar reset de senha
 - ✅ POST `/auth/password/reset/confirm` - Confirmar reset de senha
 
-### 4.3. Permissões Customizadas
+### 4.3. Permissões Customizadas (Base)
 - ✅ Criar `IsClient` permission
 - ✅ Criar `IsProvider` permission
 - ✅ Criar `IsAdmin` permission (centralizado em accounts, re-exportado em admin)
 - ✅ Criar `IsClientOrProvider` permission (bônus)
 - ✅ Criar `IsOwnerOrAdmin` permission (bônus - verifica dono ou admin)
-- ⬜ Criar `IsProposalOwner` permission (quando implementar proposals)
-- ⬜ Criar `IsOrderOwner` permission (quando implementar orders)
-- ⬜ Criar `IsChatRoomParticipant` permission (quando implementar chat)
-- ⬜ Criar `IsSubscriptionOwner` permission (quando implementar subscriptions)
-- ⬜ Criar `HasActiveSubscription` permission
-- ⬜ Criar `CanCreateOrder` permission (verifica limites)
-- ⬜ Criar `CanCreateProposal` permission (verifica limites)
+
+> **Nota:** Permissões específicas de cada módulo foram movidas para suas respectivas fases:
+> - `IsOrderOwner`, `CanCreateOrder` → Fase 7 (Orders)
+> - `IsProposalOwner`, `CanCreateProposal` → Fase 8 (Proposals)
+> - `IsChatRoomParticipant` → Fase 9 (Chat)
+> - `IsSubscriptionOwner`, `HasActiveSubscription` → Fase 10 (Subscriptions)
 
 ### 4.4. Validação de Senhas
 - ✅ Implementar validação de força de senha (mínimo 8 caracteres, letras, números, caracteres especiais)
@@ -359,7 +358,11 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ⬜ Criar `OrderStatusUpdateSerializer`
 - ⬜ Implementar validações (budget_min < budget_max, deadline no futuro)
 
-### 7.2. ViewSets
+### 7.2. Permissões
+- ⬜ Criar `IsOrderOwner` permission
+- ⬜ Criar `CanCreateOrder` permission (verifica limites de assinatura)
+
+### 7.3. ViewSets
 - ⬜ Criar `OrderViewSet`
 - ⬜ Implementar filtros (status, service, client)
 - ⬜ Implementar verificação de limites de assinatura antes de criar
@@ -402,7 +405,11 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ⬜ Criar `ProposalCreateSerializer`
 - ⬜ Implementar validações (price > 0, estimated_days > 0, expires_at no futuro)
 
-### 7.2. ViewSets
+### 7.2. Permissões
+- ⬜ Criar `IsProposalOwner` permission
+- ⬜ Criar `CanCreateProposal` permission (verifica limites de assinatura)
+
+### 7.3. ViewSets
 - ⬜ Criar `ProposalViewSet`
 - ⬜ Implementar filtros (order, provider, status)
 - ⬜ Implementar verificação de limites de assinatura antes de criar
@@ -448,7 +455,10 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ⬜ Criar `MessageCreateSerializer`
 - ⬜ Implementar validações
 
-### 9.2. ViewSets
+### 9.2. Permissões
+- ⬜ Criar `IsChatRoomParticipant` permission
+
+### 9.3. ViewSets
 - ⬜ Criar `ChatRoomViewSet`
 - ⬜ Criar `MessageViewSet`
 - ⬜ Implementar lógica de criação automática de ChatRoom
@@ -505,7 +515,11 @@ Lista de tarefas organizadas para desenvolvimento do projeto Marketplace de Serv
 - ⬜ Criar `SubscriptionUsageSerializer`
 - ⬜ Implementar validações
 
-### 9.2. ViewSets
+### 9.2. Permissões
+- ⬜ Criar `IsSubscriptionOwner` permission
+- ⬜ Criar `HasActiveSubscription` permission
+
+### 9.3. ViewSets
 - ⬜ Criar `SubscriptionPlanViewSet` (admin only para criar/editar)
 - ⬜ Criar `UserSubscriptionViewSet`
 - ⬜ Criar `SubscriptionPaymentViewSet`
